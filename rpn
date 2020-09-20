@@ -138,6 +138,9 @@ class RPNCalc(object):
         if self.Parse(atom):
           stack_changed = True
         self._DebugMessage('Exec: %s' % atom)
+      if self.stack and isinstance(self.stack[-1], complex) and self.stack[-1].imag == 0:
+          # Implicit conversion back to a pure real
+          self.stack[-1] = self.stack[-1].real
       if self.debug_mode:
           sys.stdout.write('\n')
     except IndexError, e:
@@ -148,7 +151,7 @@ class RPNCalc(object):
       self.DumpError('Value Error: %s' % e, atom)
     except OverflowError, e:
       self.DumpError('Overflow Error: %s' % e, atom)
-   except TypeError, e:
+    except TypeError, e:
       self.DumpError('TypeError: %s' % e, atom)
     except KeyError, e:
       self.DumpError('KeyError', atom)
