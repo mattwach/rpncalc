@@ -4,6 +4,7 @@
 # By: Matt Wachowski
 
 import atexit
+import cmath
 import copy
 import datetime
 import math
@@ -147,7 +148,7 @@ class RPNCalc(object):
       self.DumpError('Value Error: %s' % e, atom)
     except OverflowError, e:
       self.DumpError('Overflow Error: %s' % e, atom)
-    except TypeError, e:
+   except TypeError, e:
       self.DumpError('TypeError: %s' % e, atom)
     except KeyError, e:
       self.DumpError('KeyError', atom)
@@ -406,11 +407,41 @@ class RPNCalc(object):
     return False
 
   def PushFloat(self, arg):
-    self._PushStack(float(arg))
+    self.stack.append(float(arg))
+    return True
+
+  def PushComplex(self, arg):
+    is_negative = arg.startswith('-')
+    if is_negative:
+      arg = arg[1:]
+
+    if len(arg) == 1:
+      # It's just an i or j
+      self.stack.append(complex(0.0, -10 if is_negative else 1.0))
+      return True
+
+    arg = arg[:-1]  # remove the i or j
+
+    j_is_negative = '-' in arg
+    if j_is_negative:
+      real, imag = arg.split('-')
+    else:
+      real, imag = arg.split('+')
+
+    if not imag:
+      imag = 1.0
+
+    if is_negative:
+      real = -real
+
+    if j_is_negative:
+      imag = -imag
+
+    self.stack.append(complex(float(real), float(imag)))
     return True
 
   def PushInt(self, arg):
-    self._PushStack(int(arg))
+    self.stack.append(int(arg))
     return True
 
 
@@ -423,7 +454,7 @@ class RPNCalc(object):
       sign = 1
 
     d = arg[:-1]
-    self._PushStack(sign * int(d) * 86400)
+    self.stack.append(sign * int(d) * 86400)
     self._CheckDurationMode()
     return True
 
@@ -435,7 +466,7 @@ class RPNCalc(object):
       sign = 1
     d, hms = arg.split('d')
     h, m, s = hms.split(':')
-    self._PushStack(sign * (int(d) * 86400 +
+    self.stack.append(sign * (int(d) * 86400 +
                       int(h) * 3600 + 
                       int(m) * 60 + 
                       int(s)))
@@ -449,7 +480,7 @@ class RPNCalc(object):
     else:
       sign = 1
     h, m, s = arg.split(':')
-    self._PushStack(sign * (int(h) * 3600 + int(m) * 60 + int(s)))
+    self.stack.append(sign * (int(h) * 3600 + int(m) * 60 + int(s)))
     self._CheckDurationMode()
     return True
 
@@ -460,18 +491,18 @@ class RPNCalc(object):
     else:
       sign = 1
     m, s = arg.split(':')
-    self._PushStack(sign * (int(m) * 60 + int(s)))
+    self.stack.append(sign * (int(m) * 60 + int(s)))
     self._CheckDurationMode()
     return True
 
   def PushCurrentTime(self, arg):
-    self._PushStack(time.time())
+    self.stack.append(time.time())
     self._CheckTimeMode()
     return True
 
   def PushToday(self, arg):
     today = time.mktime(datetime.date.today().timetuple())
-    self._PushStack(today)
+    self.stack.append(today)
     self._CheckTimeMode()
     return True
 
@@ -479,7 +510,7 @@ class RPNCalc(object):
     month, day = arg.split('/')
     today = datetime.date.today()
     the_date = today.replace(month=int(month), day=int(day))
-    self._PushStack(time.mktime(the_date.timetuple()))
+    self.stack.append(time.mktime(the_date.timetuple()))
     self._CheckTimeMode()
     return True
 
@@ -487,7 +518,7 @@ class RPNCalc(object):
     month, day, year = arg.split('/')
     today = datetime.date.today()
     the_date = today.replace(month=int(month), day=int(day), year=int(year))
-    self._PushStack(time.mktime(the_date.timetuple()))
+    self.stack.append(time.mktime(the_date.timetuple()))
     self._CheckTimeMode()
     return True
 
@@ -498,18 +529,18 @@ class RPNCalc(object):
     now = datetime.datetime.now()
     the_date = now.replace(month=int(month), day=int(day), year=int(year),
                            hour=int(hour), minute=int(minute), second=int(second))
-    self._PushStack(time.mktime(the_date.timetuple()))
+    self.stack.append(time.mktime(the_date.timetuple()))
     self._CheckTimeMode()
     return True
 
   def PushHex(self, arg):
     self.HexMode(None)
-    self._PushStack(int(arg, 16))
+    self.stack.append(int(arg, 16))
     return True
 
   def PushBin(self, arg):
     self.BinaryMode(None)
-    self._PushStack(int(arg[2:], 2))
+    self.stack.append(int(arg[2:], 2))
     return True
 
   def Add(self, arg):
@@ -741,12 +772,18 @@ class RPNCalc(object):
 
   def Log(self, args):
     y = self.stack.pop()
-    self.stack.append(math.log(float(y)))
+    if isinstance(y, complex):
+      self.stack.append(cmath.log(y))
+    else:
+      self.stack.append(math.log(float(y)))
     return True
 
   def Log10(self, args):
     y = self.stack.pop()
-    self.stack.append(math.log10(float(y)))
+    if isinstance(y, complex):
+      self.stack.append(cmath.log10(y))
+    else:
+      self.stack.append(math.log10(float(y)))
     return True
 
   def Square(self, args):
@@ -756,48 +793,69 @@ class RPNCalc(object):
 
   def SquareRoot(self, args):
     y = self.stack.pop()
-    self.stack.append(math.sqrt(y))
+    if isinstance(y, complex) or y < 0:
+      self.stack.append(cmath.sqrt(y))
+    else:
+      self.stack.append(math.sqrt(y))
     return True
 
   def _PopTrig(self):
     y = self.stack.pop()
-    if self.degree_mode:
+    if not isinstance(y, complex) and self.degree_mode:
       y = math.radians(y)
     return y
 
   def _PushTrig(self, y):
-    if self.degree_mode:
+    if not isinstance(y, complex) and self.degree_mode:
       y = math.degrees(y)
     self.stack.append(y)
 
   def Sin(self, args):
     y = self._PopTrig()
-    self.stack.append(math.sin(y))
+    if isinstance(y, complex):
+      self.stack.append(cmath.sin(y))
+    else:
+      self.stack.append(math.sin(y))
     return True
 
   def Cos(self, args):
     y = self._PopTrig()
-    self.stack.append(math.cos(y))
+    if isinstance(y, complex):
+      self.stack.append(cmath.cos(y))
+    else:
+      self.stack.append(math.cos(y))
     return True
 
   def Tan(self, args):
     y = self._PopTrig()
-    self.stack.append(math.tan(y))
+    if isinstance(y, complex):
+      self.stack.append(cmath.tan(y))
+    else:
+      self.stack.append(math.tan(y))
     return True
 
   def ASin(self, args):
     y = self.stack.pop()
-    self._PushTrig(math.asin(y))
+    if isinstance(y, complex):
+      self._PushTrig(cmath.asin(y))
+    else:
+      self._PushTrig(math.asin(y))
     return True
 
   def ACos(self, args):
     y = self.stack.pop()
-    self._PushTrig(math.acos(y))
+    if isinstance(y, complex):
+      self._PushTrig(cmath.acos(y))
+    else:
+      self._PushTrig(math.acos(y))
     return True
 
   def ATan(self, args):
     y = self.stack.pop()
-    self._PushTrig(math.atan(y))
+    if isinstance(y, complex):
+      self._PushTrig(cmath.atan(y))
+    else:
+      self._PushTrig(math.atan(y))
     return True
 
   def Convert(self, arg):
@@ -979,12 +1037,6 @@ class RPNCalc(object):
       self.stack.append(0)
     return True
 
-  def _PushStack(self, val):
-    if self.mixed_mode:
-      self.stack.append(val)
-    else:
-      self.stack.append(float(val))
-
   def _CheckDurationMode(self):
     if ((self.display_mode != RPNCalc._TimeMode) and
         (self.display_mode != RPNCalc._DurationMode)):
@@ -1126,6 +1178,8 @@ MATCH_TABLE = [
        RPNCalc.PushFloat, NM, 'Floating point numbers' ),
     ( ('1e6, 2.5e-6', re.compile(r'^-?[0-9]+[0-9]*e-?[0-9]*$')), 
        RPNCalc.PushFloat, NM, 'Scientific numbers' ),
+    ( ('1+5i, 3-2j', re.compile(r'^-?([0-9]+)?(\.[0-9]+)?[+-]?([0-9]+)?(\.[0-9]+)?[ij]$')), 
+       RPNCalc.PushComplex, NM, 'Complex numbers' ),
     ( ('0x36, -0x1234', re.compile(r'^-?0x[0-9a-fA-F]+$')),
         RPNCalc.PushHex, NM, 'Hexidecimal numbers' ),
     ( ('1001b, -1001b', re.compile(r'^-?0b[0-1]+$')),
