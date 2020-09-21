@@ -73,6 +73,7 @@ class RPNCalc(object):
     self.stack_clipboard = None
     self.mixed_mode = False
     self.fixed_places = 0
+    self.imagj = False
     self.var_dict = copy.copy(BUILTIN_VARS)
     self.degree_mode = False
     self.debug_mode = False
@@ -140,9 +141,13 @@ class RPNCalc(object):
           self.DumpState()
         if self.Parse(atom):
           stack_changed = True
-          if self.stack and isinstance(self.stack[-1], complex) and self.stack[-1].imag == 0:
-              # Implicit conversion back to a pure real
-              self.stack[-1] = self.stack[-1].real
+          if self.stack:
+            if isinstance(self.stack[-1], complex):
+              if self.stack[-1].imag == 0:
+                # Implicit conversion back to a pure real
+                self.stack[-1] = self.stack[-1].real
+            elif not self.mixed_mode and not isinstance(self.stack[-1], float):
+              self.stack[-1] = float(self.stack[-1])
         self._DebugMessage('Exec: %s' % atom)
       if self.debug_mode:
           sys.stdout.write('\n')
@@ -390,6 +395,14 @@ class RPNCalc(object):
 
   def NoDebugMode(self, arg):
     self.debug_mode = False
+    return False
+
+  def ImagI(self, arg):
+    self.imagj = False
+    return False
+
+  def ImagJ(self, arg):
+    self.imagj = True
     return False
 
   def MixedMode(self, arg):
@@ -1062,13 +1075,15 @@ class RPNCalc(object):
   @staticmethod
   def _NormalMode(self, value):
     if isinstance(value, complex):
+      letter = 'j' if self.imagj else 'i'
       if value.real == 0:
-        return '%si' % value.imag
+        return '%s%s' % (value.imag, letter)
 
-      return '%s%s%si' % (
+      return '%s%s%s%s' % (
           value.real,
           '+' if value.imag >= 0 else '',
-          value.imag
+          value.imag,
+          letter
       )
     return str(value)
 
@@ -1215,6 +1230,8 @@ MATCH_TABLE = [
        RPNCalc.PushDate, NM, 'Date'),
     ( ('07/30/2006+16:00:00', re.compile(r'^[01]?[0-9]/[0-3]?[0-9]/[0-9]+\+[01]?[0-9]:[0-5][0-9]:[0-5][0-9]$')),
        RPNCalc.PushDateTime, NM, 'Date'),
+    ( 'imagi', RPNCalc.ImagI, NM, 'Disaplay Complex numbers with i' ),
+    ( 'imagj', RPNCalc.ImagJ, NM, 'Disaplay Complex numbers with j' ),
     ( 'now', RPNCalc.PushCurrentTime, NM, 'Current time and date' ),
     ( 'today', RPNCalc.PushToday, NM, 'Current date' ),
     ( 'mixed', RPNCalc.MixedMode, NM, 'Allow integers and floats' ),
