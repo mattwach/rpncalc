@@ -231,7 +231,8 @@ class RPNCalc(object):
           sys.stdout.write('...  ')
         
         if len(self.stack) > 2:
-          str_args = [str(x) for x in self.stack[-MAX_STACK_ARGS:-2]]
+          str_args = [
+            RPNCalc._NormalMode(self, x) for x in self.stack[-MAX_STACK_ARGS:-2]]
           sys.stdout.write('  '.join(str_args))
           sys.stdout.write('\n')
 
