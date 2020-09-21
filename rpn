@@ -407,32 +407,29 @@ class RPNCalc(object):
     return True
 
   def PushComplex(self, arg):
-    is_negative = arg.startswith('-')
-    if is_negative:
-      arg = arg[1:]
-
-    if len(arg) == 1:
-      # It's just an i or j
-      self.stack.append(complex(0.0, -10 if is_negative else 1.0))
-      return True
-
     arg = arg[:-1]  # remove the i or j
+    if not arg or arg[-1] == '-' or arg[-1] == '+':
+      arg += '1'  # no number was provided for i, add a one to simplify parsing
 
-    j_is_negative = '-' in arg
-    if j_is_negative:
-      real, imag = arg.split('-')
-    else:
+    if '+' in arg:
       real, imag = arg.split('+')
-
-    if not imag:
-      imag = 1.0
-
-    if is_negative:
-      real = -real
-
-    if j_is_negative:
-      imag = -imag
-
+      if not real:
+        real = '0'
+    else:
+      neg_args = arg.split('-')
+      if len(neg_args) == 1:
+        real = '0'
+        imag = arg
+      elif len(neg_args) == 2:
+        real, imag = neg_args
+        if not real:
+          real = '0'
+        imag = '-' + imag
+      else:
+        _, real, imag = arg.split('-')
+        real = '-' + real
+        imag = '-' + imag
+    
     self.stack.append(complex(float(real), float(imag)))
     return True
 
