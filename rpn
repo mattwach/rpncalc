@@ -42,6 +42,9 @@ class FixedModeValueOutOfRange(Error):
   def __init__(self, arg):
     Error.__init__(self, str(arg))
 
+class DegreeModeNotSupported(Error):
+  pass
+
 #
 # Builtin vars
 #
@@ -175,6 +178,8 @@ class RPNCalc(object):
       self.DumpError('Unknown Conversion Type: %s' % e, atom)
     except conversion.IncompatibleConversionTypes, e:
       self.DumpError('Incompatible Conversion Types: %s' % e, atom)
+    except DegreeModeNotSupported:
+      self.DumpError('Degree mode is not supported for complex trigonometry', atom)
 
     if e and self.reraise:
       raise e
@@ -795,12 +800,16 @@ class RPNCalc(object):
 
   def _PopTrig(self):
     y = self.stack.pop()
-    if not isinstance(y, complex) and self.degree_mode:
+    if self.degree_mode:
+      if isinstance(y, complex):
+        raise DegreeModeNotSupported()
       y = math.radians(y)
     return y
 
   def _PushTrig(self, y):
-    if not isinstance(y, complex) and self.degree_mode:
+    if self.degree_mode:
+      if isinstance(y, complex):
+        raise DegreeModeNotSupported()
       y = math.degrees(y)
     self.stack.append(y)
 
