@@ -63,7 +63,7 @@ class RPNCalc(object):
     self.undo_history = []
     self.redo_history = []
     self.batch_display = False
-    self.display_mode = None
+    self.display_mode = RPNCalc._NormalMode
     self.manual_mode = False
     self.display_mode_str = None
     self.clipboard = None
@@ -255,20 +255,14 @@ class RPNCalc(object):
 
   def DumpVar(self, label, value):
 
-    if label:
+    if not label:
+     sys.stdout.write('%s' % self.display_mode(self, value))
+    else:
       prefix = '  ' * self.debug_indent
-      sys.stdout.write(prefix)
-      sys.stdout.write(label)
-      sys.stdout.write(' = ')
-
-    if label or not self.display_mode:
-      sys.stdout.write('%-15s' % str(value))
-
-    if label and self.display_mode:
-      sys.stdout.write(' | ')
-
-    if self.display_mode:
-      sys.stdout.write(self.display_mode(self, value))
+      sys.stdout.write('%s%s = %-15s' % (
+          prefix, label, RPNCalc._NormalMode(self, value)))
+      if self.display_mode != RPNCalc._NormalMode:
+        sys.stdout.write(' | %s' % self.display_mode(self, value))
 
     sys.stdout.write('\n')
 
@@ -363,17 +357,16 @@ class RPNCalc(object):
     return True
 
   def _SetFixedMode(self, amount, force):
-    if force or not self.manual_mode:  
-      if force or self.display_mode is None:
-        if amount < 0 or amount > 20:
-          raise FixedModeValueOutOfRange(amount)
-        self.display_mode = RPNCalc._FixedMode
-        self.fixed_places = amount
-        self.display_mode_str = 'fixed%d' % amount
+    if force:
+      if amount < 0 or amount > 20:
+        raise FixedModeValueOutOfRange(amount)
+      self.display_mode = RPNCalc._FixedMode
+      self.fixed_places = amount
+      self.display_mode_str = 'fixed%d' % amount
 
   def NormalMode(self, arg=None):
     if arg or not self.manual_mode:
-      self.display_mode = None
+      self.display_mode = RPNCalc._NormalMode
       self.display_mode_str = None
     return True
 
@@ -1059,6 +1052,18 @@ class RPNCalc(object):
   #
   # Display Mode Callbacks
   #
+  @staticmethod
+  def _NormalMode(self, value):
+    if isinstance(value, complex):
+      if value.real == 0:
+        return '%si' % value.imag
+
+      return '%s%s%si' % (
+          value.real,
+          '+' if value.imag >= 0 else '',
+          value.imag
+      )
+    return str(value)
 
   @staticmethod
   def _FixedMode(self, value):
