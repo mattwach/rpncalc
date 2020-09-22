@@ -9,6 +9,7 @@
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-lines
 # pylint: disable=too-many-public-methods
+# pylint: disable=too-many-statements
 
 import atexit
 import cmath
@@ -134,9 +135,10 @@ class RPNCalc(object):
       return self.ExecCommands(command_list)
 
   def ExecCommands(self, command_list):
-
     stack_changed = False
-    e = None
+    def maybe_reraise(e):
+      if self.reraise:
+        raise e
 
     try:
       for atom in command_list:
@@ -149,29 +151,37 @@ class RPNCalc(object):
         sys.stdout.write('\n')
     except Error as e:
       self.DumpError(str(e), atom)
+      maybe_reraise(e)
     except IndexError as e:
       self.DumpError('Not Enough Stack Arguments', atom)
+      maybe_reraise(e)
     except ZeroDivisionError as e:
       self.DumpError('Divide By Zero', None)
+      maybe_reraise(e)
     except ValueError as e:
       self.DumpError('Value Error: %s' % e, atom)
+      maybe_reraise(e)
     except OverflowError as e:
       self.DumpError('Overflow Error: %s' % e, atom)
+      maybe_reraise(e)
     except TypeError as e:
       self.DumpError('TypeError: %s' % e, atom)
+      maybe_reraise(e)
     except KeyError as e:
       self.DumpError('KeyError', atom)
+      maybe_reraise(e)
     except IOError as e:
       self.DumpError('IOError: %s' % e, None)
+      maybe_reraise(e)
     except conversion.IllegalConversionBetweenRatioAndScalar as e:
       self.DumpError("Can't convert between a ratio and scalar", atom)
+      maybe_reraise(e)
     except conversion.UnknownConversionType as e:
       self.DumpError('Unknown Conversion Type: %s' % e, atom)
+      maybe_reraise(e)
     except conversion.IncompatibleConversionTypes as e:
       self.DumpError('Incompatible Conversion Types: %s' % e, atom)
-
-    if e and self.reraise:
-      raise e  # pylint: disable=raising-bad-type
+      maybe_reraise(e)
 
     return stack_changed
 
