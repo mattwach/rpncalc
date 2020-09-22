@@ -25,21 +25,21 @@ import sys
 #
 
 DISTANCE_CONVERT = (
-  (    1.0000, 'meter', 'm', 'meters', 'metre', 'metres'),
-  ( 1609.3440, 'mile', 'miles', 'mi'),
-  (    0.0254, 'inch', 'inches', 'in'),
-  (    0.0100, 'centimeter', 'centimeters', 'cm'),
-  (    0.1000, 'decimeter', 'decimeters'),
-  (    0.0010, 'millimeter', 'millimeters', 'mm'),
-  ( 1000.0000, 'kilometer', 'kilometers', 'km'),
-  (    0.3048, 'foot', 'feet', 'ft'),
-  (    0.9144, 'yard', 'yards', 'yd'),
-  (    0.155849127913, '_gallonmeters'),
-  (    0.0779245639837, '_pintmeter'),
-  (    0.0170183442005, '_teaspoonmeters'),
-  (    0.0245446996271, '_tablespoonmeters'),
-  (    0.098178798467, '_quartmeter'),
-  (   63.6149072152, '_acremeter'),
+  (1.0000, 'meter', 'm', 'meters', 'metre', 'metres'),
+  (1609.3440, 'mile', 'miles', 'mi'),
+  (0.0254, 'inch', 'inches', 'in'),
+  (0.0100, 'centimeter', 'centimeters', 'cm'),
+  (0.1000, 'decimeter', 'decimeters'),
+  (0.0010, 'millimeter', 'millimeters', 'mm'),
+  (1000.0000, 'kilometer', 'kilometers', 'km'),
+  (0.3048, 'foot', 'feet', 'ft'),
+  (0.9144, 'yard', 'yards', 'yd'),
+  (0.155849127913, '_gallonmeters'),
+  (0.0779245639837, '_pintmeter'),
+  (0.0170183442005, '_teaspoonmeters'),
+  (0.0245446996271, '_tablespoonmeters'),
+  (0.098178798467, '_quartmeter'),
+  (63.6149072152, '_acremeter'),
 )
 
 #
@@ -47,14 +47,14 @@ DISTANCE_CONVERT = (
 #
 
 TIME_CONVERT = (
-  (      1.0000, 'second', 'seconds', 'sec', 's'),
-  (      0.0010, 'millisecond', 'milliseconds', 'ms'),
-  (      1.0e-6, 'microsecond', 'microseconds', 'us'),
-  (      1.0e-9, 'nanesecond', 'nanoseconds', 'ns'),
-  (     60.0000, 'minute', 'minutes', 'min'),
-  (   3600.0000, 'hour', 'hours', 'hr', 'h'),
-  (  86400.0000, 'day', 'days'),
-  ( 604800.0000, 'week', 'weeks'),
+  (1.0000, 'second', 'seconds', 'sec', 's'),
+  (0.0010, 'millisecond', 'milliseconds', 'ms'),
+  (1.0e-6, 'microsecond', 'microseconds', 'us'),
+  (1.0e-9, 'nanesecond', 'nanoseconds', 'ns'),
+  (60.0000, 'minute', 'minutes', 'min'),
+  (3600.0000, 'hour', 'hours', 'hr', 'h'),
+  (86400.0000, 'day', 'days'),
+  (604800.0000, 'week', 'weeks'),
 )
 
 #
@@ -62,14 +62,14 @@ TIME_CONVERT = (
 #
 
 MASS_CONVERT = (
-  (      1.00000,   'gram', 'grams', 'g' ),
-  (   1000.00000,   'kilogram', 'kilograms', 'kg' ),
-  (     28.3495231, 'ounce', 'ounces', 'oz' ),
-  (    453.59237,   'pound', 'pounds', 'lbs', 'lb' ),
-  ( 907184.74000,   'ton', 'tons'),
-  (     101.9680,   'newton', 'newtons', 'n'),
-  (  101968.0000,   'kilonewton', 'kilonewtons'),
-  (  10196800.0000,   '_barnewton'),
+  (1.00000, 'gram', 'grams', 'g'),
+  (1000.00000, 'kilogram', 'kilograms', 'kg'),
+  (28.3495231, 'ounce', 'ounces', 'oz'),
+  (453.59237, 'pound', 'pounds', 'lbs', 'lb'),
+  (907184.74000, 'ton', 'tons'),
+  (101.9680, 'newton', 'newtons', 'n'),
+  (101968.0000, 'kilonewton', 'kilonewtons'),
+  (10196800.0000, '_barnewton'),
 )
 
 #
@@ -77,10 +77,10 @@ MASS_CONVERT = (
 #
 
 CYCLE_CONVERT = (
-  (          1.0000, 'cycle', 'cycles' ),
-  (    1000000.0000, 'kilacycle', 'kilacycles' ),
-  (    1000000.0000, 'megacycle', 'megacycles' ),
-  ( 1000000000.0000, 'gigacycle', 'gigacycles' ),
+  (1.0000, 'cycle', 'cycles'),
+  (1000000.0000, 'kilacycle', 'kilacycles'),
+  (1000000.0000, 'megacycle', 'megacycles'),
+  (1000000000.0000, 'gigacycle', 'gigacycles'),
 )
 
 #
@@ -88,13 +88,13 @@ CYCLE_CONVERT = (
 #
 
 MEMORY_CONVERT = (
-  (             1.0000, 'bit', 'bits' ),
-  (          1024.0000, 'kilobit', 'kilobits' ),
-  (             8.0000, 'byte', 'bytes' ),
-  (          8192.0000, 'kilobyte', 'kilobytes', 'kb' ),
-  (       8388608.0000, 'megabyte', 'megabytes', 'mb' ),
-  (    8589934592.0000, 'gigabyte', 'gigabytes', 'gb' ),
-  ( 8796093022208.0000, 'terabyte', 'terabytes', 'tb' ),
+  (1.0000, 'bit', 'bits'),
+  (1024.0000, 'kilobit', 'kilobits'),
+  (8.0000, 'byte', 'bytes'),
+  (8192.0000, 'kilobyte', 'kilobytes', 'kb'),
+  (8388608.0000, 'megabyte', 'megabytes', 'mb'),
+  (8589934592.0000, 'gigabyte', 'gigabytes', 'gb'),
+  (8796093022208.0000, 'terabyte', 'terabytes', 'tb'),
 )
 
 #
@@ -102,8 +102,8 @@ MEMORY_CONVERT = (
 #
 
 ANGLE_CONVERT = (
-  ( 1.0000, 'radians', 'rad' ),
-  ( math.pi / 180.0, 'degrees', 'deg'),
+  (1.0000, 'radians', 'rad'),
+  (math.pi / 180.0, 'degrees', 'deg'),
 )
 
 #
@@ -111,15 +111,15 @@ ANGLE_CONVERT = (
 #
 
 ENERGY_CONVERT = (
-  (         1.0000, 'joules', 'j' ),
-  (      1000.0000, 'kilojoules', 'kj' ),
-  (   1000000.0000, 'megajoules', 'mj' ),
-  (   3600000.0000, 'kwh' ),
-  (       745.699872, 'hps' ),
-  (      1055.0600, 'btu'), # EC standard
-  ( 105506000.0000, 'therm'), # EC standard
-  (         4.2000, 'calorie', 'cal', 'calories'), 
-  (       4200.0000, 'kilocalorie', 'kilocalories'), 
+  (1.0000, 'joules', 'j'),
+  (1000.0000, 'kilojoules', 'kj'),
+  (1000000.0000, 'megajoules', 'mj'),
+  (3600000.0000, 'kwh'),
+  (745.699872, 'hps'),
+  (1055.0600, 'btu'), # EC standard
+  (105506000.0000, 'therm'), # EC standard
+  (4.2000, 'calorie', 'cal', 'calories'),
+  (4200.0000, 'kilocalorie', 'kilocalories'),
 )
 
 #
@@ -215,14 +215,14 @@ class Conversion(object):
 
   def __init__(self):
     self.convert_dict = {}
-    self._InsertKeys('Distance',            DISTANCE_CONVERT)
-    self._InsertKeys('Time',                TIME_CONVERT)
+    self._InsertKeys('Distance', DISTANCE_CONVERT)
+    self._InsertKeys('Time', TIME_CONVERT)
     self._InsertKeys('Force/Weight/Mass (Planet Earth)', MASS_CONVERT)
-    self._InsertKeys('Cycles',              CYCLE_CONVERT)
-    self._InsertKeys('Memory',              MEMORY_CONVERT)
-    self._InsertKeys('Angles',              ANGLE_CONVERT)
-    self._InsertKeys('Energy',              ENERGY_CONVERT)
-    self._InsertKeys('Temperature',         TEMPERATURE_CONVERT)
+    self._InsertKeys('Cycles', CYCLE_CONVERT)
+    self._InsertKeys('Memory', MEMORY_CONVERT)
+    self._InsertKeys('Angles', ANGLE_CONVERT)
+    self._InsertKeys('Energy', ENERGY_CONVERT)
+    self._InsertKeys('Temperature', TEMPERATURE_CONVERT)
 
   def Convert(self, value, value_type, target_type):
 
@@ -238,7 +238,7 @@ class Conversion(object):
 
     # check for inversion eligibility
 
-    if (target.IsRatio() and 
+    if (target.IsRatio() and
         (source.numerator_name == target.denominator_name)):
       target.Invert()
 
@@ -350,7 +350,7 @@ class Conversion(object):
     while index < len(numerator):
       if numerator[index] in ALIASES:
         alias = ALIASES[numerator[index]]
-        del(numerator[index])
+        del numerator[index]
         if '/' in alias:
           n, d = alias.split('/')
           numerator.extend(n.split('*'))
@@ -376,7 +376,7 @@ class Conversion(object):
 
 
   def _InsertKeys(self, class_name, data):
-    
+
     for conversion_tuple in data:
       scale_factor = conversion_tuple[0]
       keys = conversion_tuple[1:]
@@ -399,15 +399,18 @@ class ConversionData(object):
     self.numerator = numerator
     self.denominator = denominator
     self.inverted = False
-    self.numerator_name = self._BuildClassName(self.numerator, self.denominator)
-    self.denominator_name = self._BuildClassName(self.denominator, self.numerator)
+    self.numerator_name = self._BuildClassName(
+        self.numerator, self.denominator)
+    self.denominator_name = self._BuildClassName(
+        self.denominator, self.numerator)
 
   def IsRatio(self):
     return self.denominator is not None
 
   def Invert(self):
     self.numerator, self.denominator = self.denominator, self.numerator
-    self.numerator_name, self.denominator_name = self.denominator_name, self.numerator_name
+    self.numerator_name, self.denominator_name = (
+        self.denominator_name, self.numerator_name)
     self.inverted = not self.inverted
 
   def _BuildClassName(self, numerator, denominator):

@@ -5,6 +5,6 @@ set -e
 
 cp -uv hooks/* .git/hooks
 
-pylint rpn io_test.py
+pylint rpn *.py
 python io_test.py
 

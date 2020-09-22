@@ -110,7 +110,7 @@ Supports easy piping of results when run with arguments and an interactive
 mode when run without arguments.
 """
 
-DOCS['Clipboard'] = """
+DOCS['Clipboard'] = r"""
 rpncalc supports 3 types of clipboards:
 
 Standard Clipboard
