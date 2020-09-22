@@ -3,8 +3,9 @@
 
 import logging
 import subprocess
+import sys
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 # Data Format
 #
@@ -27,10 +28,10 @@ DATA = """
 # Basic tests
 
 I 5
-O x=5.0
+O y = 5.0 |>
 
 I -5
-O y=10.0 x=5.0
+O x = 5.0 y = -5.0 |>
 """
 
 class Error(Exception):
@@ -38,6 +39,14 @@ class Error(Exception):
 
 
 class MaxLinesError(Error):
+  pass
+
+
+class OutputMismatch(Error):
+  pass
+
+
+class UnknownCommandError(Error):
   pass
 
 
@@ -55,6 +64,32 @@ def get_output(fout, max_chars=8192):
   raise MaxLinesError('max_chars exceeded.')
 
 
+def compare_output(line_number, expected, actual):
+  if expected != actual:
+    raise OutputMismatch('Line %d.  Expected: %s.  Got %s' % (
+          line_number, expected, actual))
+
+
+def parse_line(line_number, line, p):
+  """Parses a single line of DATA."""
+
+  line = line.strip()
+  if not line:
+    return
+
+  if line.startswith('#'):
+    return
+
+  tokens = line.split()
+  cmd = tokens[0]
+  if cmd == 'I':
+    p.stdin.write(' '.join(tokens[1:]))
+    p.stdin.write('\n')
+  elif cmd == 'O':
+    compare_output(line_number, tokens[1:], get_output(p.stdout))
+  else:
+    raise UnknownCommandError('Unknown Command: %s' % line)
+
 def main():
   p = subprocess.Popen(
     ['python', '-u', 'rpn'],
@@ -62,6 +97,14 @@ def main():
     stdout=subprocess.PIPE)
 
   get_output(p.stdout)
+
+  for line_number, line in enumerate(DATA.split('\n')):
+    try:
+      parse_line(line_number + 1, line, p)
+    except OutputMismatch as e:
+      p.terminate()
+      p.wait()
+      sys.exit(e)
 
   # Wrap up
   p.terminate()
