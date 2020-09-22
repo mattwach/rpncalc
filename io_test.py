@@ -32,6 +32,9 @@ O y = 5.0 |>
 
 I -5
 O x = 5.0 y = -5.0 |>
+
+I 0
+O 5.0 x = -5.0 y = 0.0 |>
 """
 
 class Error(Exception):
