@@ -893,7 +893,7 @@ class RPNCalc(object):
     class_map = {}
 
     for cmd, _, class_str, help_str in MATCH_TABLE:
-      if isinstance(cmd, str):
+      if not isinstance(cmd, str):
         cmd = cmd[0]
       if class_str not in class_map:
         class_list.append(class_str)
