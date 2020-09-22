@@ -1,15 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 # RPN calculator that supports time based maths and other goodies
 #
 # By: Matt Wachowski
-
-# pylint: disable=invalid-name
-# pylint: disable=missing-docstring
-# pylint: disable=no-self-use
-# pylint: disable=too-many-branches
-# pylint: disable=too-many-lines
-# pylint: disable=too-many-public-methods
-# pylint: disable=too-many-statements
 
 import atexit
 import cmath
@@ -1037,9 +1029,9 @@ class RPNCalc(object):
   def Not(self, _):
     y = self.stack.pop()
     if y:
-      self.stack.push(0)
+      self.stack.append(0)
     else:
-      self.stack.push(1)
+      self.stack.append(1)
 
   #
   # Internal Helpers
@@ -1380,7 +1372,7 @@ def main(rpn_calc=None):
       rpn_calc.Snapshot()
 
     try:
-      line = input(rpn_calc.MakePrompt())
+      line = raw_input(rpn_calc.MakePrompt())
     except EOFError:
       sys.stdout.write('\n')
       sys.exit(0)
