@@ -25,16 +25,36 @@ logging.basicConfig(level=logging.INFO)
 #   I : Send some data to rpn
 #   O : Expect this data to be returned
 DATA = """
-# Basic tests
+# --- Basic tests ---
 
-I 5
-O y = 5.0 |>
+  I 5
+  O y = 5.0 |>
 
-I -5
-O x = 5.0 y = -5.0 |>
+  I -5
+  O x = 5.0 y = -5.0 |>
 
-I 0
-O 5.0 x = -5.0 y = 0.0 |>
+  I 0
+  O 5.0 x = -5.0 y = 0.0 |>
+
+  I X 5 5 +
+  O y = 10.0 |>
+
+  I X 5 5 + 2 /
+  O y = 5.0 |>
+
+# Trig functions, in radians
+
+  I X 1 sin
+  O y = 0.841470984808 |>
+
+# --- Conversions ---
+
+  I X 10 in>cm
+  O y = 25.4 |>
+
+  I X 25.4 cm>in
+  O y = 10.0 |>
+
 """
 
 class Error(Exception):
