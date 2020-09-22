@@ -25,31 +25,27 @@ import calcdocs
 import conversion
 
 class Error(Exception):
-  def __init__(self, arg=''):
-    Exception.__init__(self, arg)
-
-class UnknownArgument(Error):
-  def __init__(self, arg):
-    Error.__init__(self, arg)
-
-class NoUndoHistory(Error):
   pass
 
-class NoRedoHistory(Error):
+class UnknownArgumentError(Error):
   pass
 
-class ClipboardEmpty(Error):
+class NoUndoHistoryError(Error):
   pass
 
-class MacroNotFound(Error):
-  def __init__(self, arg):
-    Error.__init__(self, arg)
+class NoRedoHistoryError(Error):
+  pass
 
-class FixedModeValueOutOfRange(Error):
-  def __init__(self, arg):
-    Error.__init__(self, str(arg))
+class ClipboardEmptyError(Error):
+  pass
 
-class DegreeModeNotSupported(Error):
+class MacroNotFoundError(Error):
+  pass
+
+class FixedModeValueOutOfRangeError(Error):
+  pass
+
+class DegreeModeNotSupportedError(Error):
   pass
 
 #
@@ -148,16 +144,11 @@ class RPNCalc(object):
           self.DumpState()
         if self.Parse(atom):
           stack_changed = True
-          if self.stack:
-            if isinstance(self.stack[-1], complex):
-              if self.stack[-1].imag == 0:
-                # Implicit conversion back to a pure real
-                self.stack[-1] = self.stack[-1].real
-            elif not self.mixed_mode and not isinstance(self.stack[-1], float):
-              self.stack[-1] = float(self.stack[-1])
         self._DebugMessage('Exec: %s' % atom)
       if self.debug_mode:
         sys.stdout.write('\n')
+    except Error as e:
+      self.DumpError(str(e), atom)
     except IndexError as e:
       self.DumpError('Not Enough Stack Arguments', atom)
     except ZeroDivisionError as e:
@@ -172,27 +163,12 @@ class RPNCalc(object):
       self.DumpError('KeyError', atom)
     except IOError as e:
       self.DumpError('IOError: %s' % e, None)
-    except UnknownArgument as e:
-      self.DumpError('Unknown Argument (try ? for help)', atom)
-    except NoUndoHistory as e:
-      self.DumpError('No Undo History Available', None)
-    except NoRedoHistory as e:
-      self.DumpError('No Redo History Available', None)
-    except ClipboardEmpty as e:
-      self.DumpError('Clipboard is Empty', None)
-    except MacroNotFound as e:
-      self.DumpError('Macro not found: %s' % e, None)
-    except FixedModeValueOutOfRange as e:
-      self.DumpError('Fixed Mode: value out of range: %s' %e, None)
     except conversion.IllegalConversionBetweenRatioAndScalar as e:
       self.DumpError("Can't convert between a ratio and scalar", atom)
     except conversion.UnknownConversionType as e:
       self.DumpError('Unknown Conversion Type: %s' % e, atom)
     except conversion.IncompatibleConversionTypes as e:
       self.DumpError('Incompatible Conversion Types: %s' % e, atom)
-    except DegreeModeNotSupported:
-      self.DumpError(
-          'Degree mode is not supported for complex trigonometry', atom)
 
     if e and self.reraise:
       raise e  # pylint: disable=raising-bad-type
@@ -217,7 +193,15 @@ class RPNCalc(object):
     if callback:
       stack_changed = callback(self, arg)
     else:
-      raise UnknownArgument(arg)
+      raise UnknownArgumentError('Unknown Argument (try ? for help): %s' % arg)
+
+    if stack_changed and self.stack:
+      if isinstance(self.stack[-1], complex):
+        if self.stack[-1].imag == 0:
+          # Implicit conversion back to a pure real
+          self.stack[-1] = self.stack[-1].real
+      elif not self.mixed_mode and not isinstance(self.stack[-1], float):
+        self.stack[-1] = float(self.stack[-1])
 
     return stack_changed
 
@@ -299,14 +283,14 @@ class RPNCalc(object):
 
   def Undo(self, _):
     if len(self.undo_history) < 2:
-      raise NoUndoHistory()
+      raise NoUndoHistoryError('No Undo History Available')
     self.redo_history.append(self.undo_history.pop())
     self.stack = self.undo_history.pop()
     return True
 
   def Redo(self, _):
     if not self.redo_history:
-      raise NoRedoHistory()
+      raise NoRedoHistoryError('No Redo History Available')
     self.stack = self.redo_history.pop()
     return True
 
@@ -374,7 +358,8 @@ class RPNCalc(object):
   def _SetFixedMode(self, amount, force):
     if force:
       if amount < 0 or amount > 20:
-        raise FixedModeValueOutOfRange(amount)
+        raise FixedModeValueOutOfRangeError(
+            'Fixed Mode: value out of range: %d' % amount)
       self.display_mode = RPNCalc._FixedMode
       self.fixed_places = amount
       self.display_mode_str = 'fixed%d' % amount
@@ -714,7 +699,7 @@ class RPNCalc(object):
 
   def Paste(self, _):
     if self.clipboard is None:
-      raise ClipboardEmpty()
+      raise ClipboardEmptyError('Clipboard is empty')
     self.stack.append(self.clipboard)
     return True
 
@@ -732,7 +717,7 @@ class RPNCalc(object):
 
   def PositionalPaste(self, _):
     if self.clipboard is None:
-      raise ClipboardEmpty()
+      raise ClipboardEmptyError('Clipboard is empty')
     pos = int(self.stack.pop())
     if pos < 0:
       raise IndexError()
@@ -819,14 +804,16 @@ class RPNCalc(object):
     y = self.stack.pop()
     if self.degree_mode:
       if isinstance(y, complex):
-        raise DegreeModeNotSupported()
+        raise DegreeModeNotSupportedError(
+            'Degree mode is not supported for complex trigonometry')
       y = math.radians(y)
     return y
 
   def _PushTrig(self, y):
     if self.degree_mode:
       if isinstance(y, complex):
-        raise DegreeModeNotSupported()
+        raise DegreeModeNotSupportedError(
+            'Degree mode is not supported for complex trigonometry')
       y = math.degrees(y)
     self.stack.append(y)
 
@@ -970,7 +957,7 @@ class RPNCalc(object):
 
     macro_name = arg[1:]
     if macro_name not in self.macros:
-      raise MacroNotFound(macro_name)
+      raise MacroNotFoundError('Macro Not Found: %s' % macro_name)
 
     if self.debug_mode:
       self._DebugMessage('Executing macro: %s %s\n' %
