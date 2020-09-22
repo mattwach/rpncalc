@@ -1372,6 +1372,7 @@ def main(rpn_calc=None):
       rpn_calc.Snapshot()
 
     try:
+      sys.stdout.flush()
       line = raw_input(rpn_calc.MakePrompt())
     except EOFError:
       sys.stdout.write('\n')
