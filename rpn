@@ -1,7 +1,14 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # RPN calculator that supports time based maths and other goodies
 #
 # By: Matt Wachowski
+
+# pylint: disable=invalid-name
+# pylint: disable=missing-docstring
+# pylint: disable=no-self-use
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-lines
+# pylint: disable=too-many-public-methods
 
 import atexit
 import cmath
@@ -50,9 +57,9 @@ class DegreeModeNotSupported(Error):
 #
 
 BUILTIN_VARS = {
-  'pi':math.pi,
-  'e':math.e,
-  'c':299792458.0, # speed of light
+    'pi': math.pi,
+    'e': math.e,
+    'c': 299792458.0, # speed of light
 }
 
 #
@@ -111,7 +118,7 @@ class RPNCalc(object):
 
     if '#' in sub_line:
       sub_line = sub_line.split('#')[0]
-    sub_line = sub_line.replace(',','').strip()
+    sub_line = sub_line.replace(',', '').strip()
 
     if sub_line.endswith('\\'):
       self.line_buffer.append(sub_line[:-1])
@@ -124,7 +131,7 @@ class RPNCalc(object):
       self.line_buffer = []
 
       if line.startswith('m:'):
-        command_list = [ line ]
+        command_list = [line]
       else:
         command_list = line.split()
 
@@ -150,66 +157,64 @@ class RPNCalc(object):
               self.stack[-1] = float(self.stack[-1])
         self._DebugMessage('Exec: %s' % atom)
       if self.debug_mode:
-          sys.stdout.write('\n')
-    except IndexError, e:
+        sys.stdout.write('\n')
+    except IndexError as e:
       self.DumpError('Not Enough Stack Arguments', atom)
-    except ZeroDivisionError, e:
+    except ZeroDivisionError as e:
       self.DumpError('Divide By Zero', None)
-    except ValueError, e:
+    except ValueError as e:
       self.DumpError('Value Error: %s' % e, atom)
-    except OverflowError, e:
+    except OverflowError as e:
       self.DumpError('Overflow Error: %s' % e, atom)
-    except TypeError, e:
+    except TypeError as e:
       self.DumpError('TypeError: %s' % e, atom)
-    except KeyError, e:
+    except KeyError as e:
       self.DumpError('KeyError', atom)
-    except IOError, e:
+    except IOError as e:
       self.DumpError('IOError: %s' % e, None)
-    except UnknownArgument, e:
+    except UnknownArgument as e:
       self.DumpError('Unknown Argument (try ? for help)', atom)
-    except NoUndoHistory, e:
+    except NoUndoHistory as e:
       self.DumpError('No Undo History Available', None)
-    except NoRedoHistory, e:
+    except NoRedoHistory as e:
       self.DumpError('No Redo History Available', None)
-    except ClipboardEmpty, e:
+    except ClipboardEmpty as e:
       self.DumpError('Clipboard is Empty', None)
-    except MacroNotFound, e:
+    except MacroNotFound as e:
       self.DumpError('Macro not found: %s' % e, None)
-    except FixedModeValueOutOfRange, e:
+    except FixedModeValueOutOfRange as e:
       self.DumpError('Fixed Mode: value out of range: %s' %e, None)
-    except conversion.IllegalConversionBetweenRatioAndScalar, e:
+    except conversion.IllegalConversionBetweenRatioAndScalar as e:
       self.DumpError("Can't convert between a ratio and scalar", atom)
-    except conversion.UnknownConversionType, e:
+    except conversion.UnknownConversionType as e:
       self.DumpError('Unknown Conversion Type: %s' % e, atom)
-    except conversion.IncompatibleConversionTypes, e:
+    except conversion.IncompatibleConversionTypes as e:
       self.DumpError('Incompatible Conversion Types: %s' % e, atom)
     except DegreeModeNotSupported:
-      self.DumpError('Degree mode is not supported for complex trigonometry', atom)
+      self.DumpError(
+          'Degree mode is not supported for complex trigonometry', atom)
 
     if e and self.reraise:
-      raise e
+      raise e  # pylint: disable=raising-bad-type
 
     return stack_changed
 
   def Parse(self, arg):
-
-    found_match = False
     stack_changed = False
 
     if arg != 'u' and arg != 'r':
       self.redo_history = []
 
     for match, callback, _, _ in MATCH_TABLE:
-      if type(match) is str:
+      if isinstance(match, str):
         if match == arg:
-          found_match = True
           break
-      else:
-        if match[1].match(arg):
-          found_match = True
-          break
+      elif match[1].match(arg):
+        break
+    else:
+      callback = None
 
-    if found_match:
+    if callback:
       stack_changed = callback(self, arg)
     else:
       raise UnknownArgument(arg)
@@ -225,7 +230,7 @@ class RPNCalc(object):
     sys.stderr.write('\n')
     sys.stderr.flush()
 
-  def DumpState(self, arg=None):
+  def DumpState(self, _=None):
 
     try:
       if self.batch_display:
@@ -239,10 +244,11 @@ class RPNCalc(object):
           sys.stdout.write(prefix)
         if len(self.stack) > MAX_STACK_ARGS:
           sys.stdout.write('...  ')
-        
+
         if len(self.stack) > 2:
           str_args = [
-            RPNCalc._NormalMode(self, x) for x in self.stack[-MAX_STACK_ARGS:-2]]
+              RPNCalc._NormalMode(self, x)
+              for x in self.stack[-MAX_STACK_ARGS:-2]]
           sys.stdout.write('  '.join(str_args))
           sys.stdout.write('\n')
 
@@ -251,23 +257,21 @@ class RPNCalc(object):
 
         if len(self.stack) >= 1:
           self.DumpVar('y', self.stack[-1])
-    except TypeError, e:
+    except TypeError as e:
       sys.stdout.write('\nTypeError: %s\n' % e)
-      pass
 
-  def DumpStateLong(self, arg=None):
+  def DumpStateLong(self, _=None):
     try:
       sys.stdout.write('\n')
       for index, var in enumerate(self.stack):
         self.DumpVar('s%d' % (len(self.stack) - index), var)
-    except TypeError, e:
+    except TypeError as e:
       sys.stdout.write('\nTypeError: %s\n' % e)
-      pass
 
   def DumpVar(self, label, value):
 
     if not label:
-     sys.stdout.write('%s' % self.display_mode(self, value))
+      sys.stdout.write('%s' % self.display_mode(self, value))
     else:
       prefix = '  ' * self.debug_indent
       sys.stdout.write('%s%s = %-15s' % (
@@ -280,9 +284,9 @@ class RPNCalc(object):
   def Snapshot(self):
     self.undo_history.append(copy.copy(self.stack))
     while len(self.undo_history) > MAX_UNDO_STEPS:
-      del(self.undo_history[0])
+      del self.undo_history[0]
 
-  def DumpVars(self, arg):
+  def DumpVars(self, _):
 
     for name in sorted(self.var_dict):
       sys.stdout.write('%-15s =  %s\n' % (name, self.var_dict[name]))
@@ -293,14 +297,14 @@ class RPNCalc(object):
   # Undo / Redo
   #
 
-  def Undo(self, arg):
+  def Undo(self, _):
     if len(self.undo_history) < 2:
       raise NoUndoHistory()
     self.redo_history.append(self.undo_history.pop())
     self.stack = self.undo_history.pop()
     return True
 
-  def Redo(self, arg):
+  def Redo(self, _):
     if not self.redo_history:
       raise NoRedoHistory()
     self.stack = self.redo_history.pop()
@@ -310,11 +314,11 @@ class RPNCalc(object):
   # Display modes
   #
 
-  def BatchMode(self, arg=None):
+  def BatchMode(self, _=None):
     self.batch_display = True
     return False
 
-  def InteractiveMode(self, arg=None):
+  def InteractiveMode(self, _=None):
     self.batch_display = False
     return False
 
@@ -381,43 +385,43 @@ class RPNCalc(object):
       self.display_mode_str = None
     return True
 
-  def DegreeMode(self, arg):
+  def DegreeMode(self, _):
     self.degree_mode = True
     return False
 
-  def RadianMode(self, arg):
+  def RadianMode(self, _):
     self.degree_mode = False
     return False
 
-  def DebugMode(self, arg):
+  def DebugMode(self, _):
     self.debug_mode = True
     return False
 
-  def NoDebugMode(self, arg):
+  def NoDebugMode(self, _):
     self.debug_mode = False
     return False
 
-  def ImagI(self, arg):
+  def ImagI(self, _):
     self.imagj = False
     return False
 
-  def ImagJ(self, arg):
+  def ImagJ(self, _):
     self.imagj = True
     return False
 
-  def MixedMode(self, arg):
+  def MixedMode(self, _):
     self.mixed_mode = True
     return False
 
-  def FloatMode(self, arg):
+  def FloatMode(self, _):
     self.mixed_mode = False
     return False
 
-  def ManualMode(self, arg):
+  def ManualMode(self, _):
     self.manual_mode = True
     return False
 
-  def AutoMode(self, arg):
+  def AutoMode(self, _):
     self.manual_mode = False
     return False
 
@@ -448,7 +452,7 @@ class RPNCalc(object):
         _, real, imag = arg.split('-')
         real = '-' + real
         imag = '-' + imag
-    
+
     self.stack.append(complex(float(real), float(imag)))
     return True
 
@@ -458,7 +462,6 @@ class RPNCalc(object):
 
 
   def PushDurationDays(self, arg):
-
     if arg.startswith('-'):
       sign = -1
       arg = arg[1:]
@@ -479,9 +482,9 @@ class RPNCalc(object):
     d, hms = arg.split('d')
     h, m, s = hms.split(':')
     self.stack.append(sign * (int(d) * 86400 +
-                      int(h) * 3600 + 
-                      int(m) * 60 + 
-                      int(s)))
+                              int(h) * 3600 +
+                              int(m) * 60 +
+                              int(s)))
     self._CheckDurationMode()
     return True
 
@@ -507,12 +510,12 @@ class RPNCalc(object):
     self._CheckDurationMode()
     return True
 
-  def PushCurrentTime(self, arg):
+  def PushCurrentTime(self, _):
     self.stack.append(time.time())
     self._CheckTimeMode()
     return True
 
-  def PushToday(self, arg):
+  def PushToday(self, _):
     today = time.mktime(datetime.date.today().timetuple())
     self.stack.append(today)
     self._CheckTimeMode()
@@ -540,7 +543,8 @@ class RPNCalc(object):
     hour, minute, second = time_str.split(':')
     now = datetime.datetime.now()
     the_date = now.replace(month=int(month), day=int(day), year=int(year),
-                           hour=int(hour), minute=int(minute), second=int(second))
+                           hour=int(hour), minute=int(minute),
+                           second=int(second))
     self.stack.append(time.mktime(the_date.timetuple()))
     self._CheckTimeMode()
     return True
@@ -555,141 +559,141 @@ class RPNCalc(object):
     self.stack.append(int(arg[2:], 2))
     return True
 
-  def Add(self, arg):
+  def Add(self, _):
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(x + y)
     return True
 
-  def Subtract(self, arg):
+  def Subtract(self, _):
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(x - y)
     return True
 
-  def Multiply(self, arg):
+  def Multiply(self, _):
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(x * y)
     return True
 
-  def PowerOf(self, arg):
+  def PowerOf(self, _):
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(x ** y)
     return True
 
-  def Divide(self, arg):
+  def Divide(self, _):
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(x / y)
     return True
 
-  def Mod(self, arg):
+  def Mod(self, _):
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(x % y)
     return True
 
-  def Factorial(self, arg):
+  def Factorial(self, _):
     y = self.stack.pop()
     self.stack.append(math.factorial(y))
     return True
 
-  def Inverse(self, arg):
+  def Inverse(self, _):
     y = float(self.stack.pop())
     self.stack.append(1.0 / y)
     return True
 
-  def Negate(self, arg):
+  def Negate(self, _):
     y = self.stack.pop()
     self.stack.append(-y)
     return True
 
-  def AbsoluteValue(self, arg):
+  def AbsoluteValue(self, _):
     y = self.stack.pop()
     if y < 0:
       y = -y
     self.stack.append(y)
     return True
 
-  def LogicalAnd(self, arg):
+  def LogicalAnd(self, _):
     self.HexMode(None)
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(int(x) & int(y))
     return True
 
-  def LogicalOr(self, arg):
+  def LogicalOr(self, _):
     self.HexMode(None)
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(int(x) | int(y))
     return True
 
-  def LogicalNot(self, arg):
+  def LogicalNot(self, _):
     self.HexMode(None)
     y = self.stack.pop()
     self.stack.append(int(~y))
     return True
 
-  def LogicalXOR(self, arg):
+  def LogicalXOR(self, _):
     self.HexMode(None)
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(int(x) ^ int(y))
     return True
 
-  def LogicalShiftRight(self, arg):
+  def LogicalShiftRight(self, _):
     self.HexMode(None)
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(int(x) >> int(y))
     return True
 
-  def LogicalShiftLeft(self, arg):
+  def LogicalShiftLeft(self, _):
     self.HexMode(None)
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(int(x) << int(y))
     return True
 
-  def Swap(self, arg):
+  def Swap(self, _):
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(y)
     self.stack.append(x)
     return True
 
-  def RollDown(self, arg):
+  def RollDown(self, _):
     y = self.stack.pop()
     self.stack.insert(0, y)
     return True
 
-  def RollUp(self, arg):
+  def RollUp(self, _):
     y = self.stack.pop(0)
     self.stack.append(y)
     return True
 
-  def Duplicate(self, arg):
+  def Duplicate(self, _):
     self.stack.append(self.stack[-1])
     return True
 
-  def Drop(self, arg):
+  def Drop(self, _):
     self.stack.pop()
     return True
 
-  def Clear(self, arg):
+  def Clear(self, _):
     self.stack = []
     return True
 
-  def Reverse(self, arg):
+  def Reverse(self, _):
     self.stack.reverse()
     return True
 
-  def Type(self, arg):
+  def Type(self, _):
     y = self.stack.pop()
-    if type(y) is int:
+    if isinstance(y, int):
       self.stack.append(float(y))
     else:
       self.mixed_mode = True
@@ -700,15 +704,15 @@ class RPNCalc(object):
   # Clipboard operations
   #
 
-  def Cut(self, arg):
+  def Cut(self, _):
     self.clipboard = self.stack.pop()
     return True
 
-  def Copy(self, arg):
+  def Copy(self, _):
     self.clipboard = self.stack[-1]
     return False
 
-  def Paste(self, arg):
+  def Paste(self, _):
     if self.clipboard is None:
       raise ClipboardEmpty()
     self.stack.append(self.clipboard)
@@ -717,16 +721,16 @@ class RPNCalc(object):
   def PositionalCut(self, arg):
     return self.PositionalCopy(arg, True)
 
-  def PositionalCopy(self, arg, cut=False):
+  def PositionalCopy(self, _, cut=False):
     pos = int(self.stack.pop())
     if pos < 0:
       raise IndexError()
     self.clipboard = self.stack[-(pos + 1)]
     if cut:
-      del(self.stack[-(pos + 1)])
+      del self.stack[-(pos + 1)]
     return True
 
-  def PositionalPaste(self, arg):
+  def PositionalPaste(self, _):
     if self.clipboard is None:
       raise ClipboardEmpty()
     pos = int(self.stack.pop())
@@ -735,16 +739,16 @@ class RPNCalc(object):
     self.stack.insert(-(pos + 1), self.clipboard)
     return True
 
-  def CutStack(self, arg):
+  def CutStack(self, _):
     self.stack_clipboard = self.stack
     self.stack = []
     return True
 
-  def CopyStack(self, arg):
+  def CopyStack(self, _):
     self.stack_clipboard = copy.copy(self.stack)
     return False
 
-  def PasteStack(self, arg):
+  def PasteStack(self, _):
     self.stack = copy.copy(self.stack_clipboard)
     return True
 
@@ -767,22 +771,22 @@ class RPNCalc(object):
   # Statistics
   #
 
-  def Sum(self, arg):
+  def Sum(self, _):
     list_sum = sum(self.stack)
-    self.stack = [ list_sum ]
+    self.stack = [list_sum]
     return True
 
-  def Mean(self, arg):
+  def Mean(self, _):
     list_sum = float(sum(self.stack))
-    self.stack = [ list_sum / len(self.stack) ]
+    self.stack = [list_sum / len(self.stack)]
     return True
 
-  def Median(self, arg):
+  def Median(self, _):
     self.stack.sort()
-    self.stack = [ self.stack[len(self.stack) / 2] ]
+    self.stack = [self.stack[len(self.stack) / 2]]
     return True
 
-  def Log(self, args):
+  def Log(self, _):
     y = self.stack.pop()
     if isinstance(y, complex):
       self.stack.append(cmath.log(y))
@@ -790,7 +794,7 @@ class RPNCalc(object):
       self.stack.append(math.log(float(y)))
     return True
 
-  def Log10(self, args):
+  def Log10(self, _):
     y = self.stack.pop()
     if isinstance(y, complex):
       self.stack.append(cmath.log10(y))
@@ -798,12 +802,12 @@ class RPNCalc(object):
       self.stack.append(math.log10(float(y)))
     return True
 
-  def Square(self, args):
+  def Square(self, _):
     y = self.stack.pop()
     self.stack.append(y * y)
     return True
 
-  def SquareRoot(self, args):
+  def SquareRoot(self, _):
     y = self.stack.pop()
     if isinstance(y, complex) or y < 0:
       self.stack.append(cmath.sqrt(y))
@@ -826,7 +830,7 @@ class RPNCalc(object):
       y = math.degrees(y)
     self.stack.append(y)
 
-  def Sin(self, args):
+  def Sin(self, _):
     y = self._PopTrig()
     if isinstance(y, complex):
       self.stack.append(cmath.sin(y))
@@ -834,7 +838,7 @@ class RPNCalc(object):
       self.stack.append(math.sin(y))
     return True
 
-  def Cos(self, args):
+  def Cos(self, _):
     y = self._PopTrig()
     if isinstance(y, complex):
       self.stack.append(cmath.cos(y))
@@ -842,7 +846,7 @@ class RPNCalc(object):
       self.stack.append(math.cos(y))
     return True
 
-  def Tan(self, args):
+  def Tan(self, _):
     y = self._PopTrig()
     if isinstance(y, complex):
       self.stack.append(cmath.tan(y))
@@ -850,7 +854,7 @@ class RPNCalc(object):
       self.stack.append(math.tan(y))
     return True
 
-  def ASin(self, args):
+  def ASin(self, _):
     y = self.stack.pop()
     if isinstance(y, complex):
       self._PushTrig(cmath.asin(y))
@@ -858,7 +862,7 @@ class RPNCalc(object):
       self._PushTrig(math.asin(y))
     return True
 
-  def ACos(self, args):
+  def ACos(self, _):
     y = self.stack.pop()
     if isinstance(y, complex):
       self._PushTrig(cmath.acos(y))
@@ -866,7 +870,7 @@ class RPNCalc(object):
       self._PushTrig(math.acos(y))
     return True
 
-  def ATan(self, args):
+  def ATan(self, _):
     y = self.stack.pop()
     if isinstance(y, complex):
       self._PushTrig(cmath.atan(y))
@@ -888,7 +892,7 @@ class RPNCalc(object):
   def Documentation(self, arg):
     return self.Help(arg, long_command_list=True, docs_mode=True)
 
-  def Help(self, arg, long_command_list=True, docs_mode=False):
+  def Help(self, _, long_command_list=True, docs_mode=False):
 
     sys.stdout.write('\n')
     if docs_mode:
@@ -900,7 +904,7 @@ class RPNCalc(object):
     class_map = {}
 
     for cmd, _, class_str, help_str in MATCH_TABLE:
-      if type(cmd) is not str:
+      if isinstance(cmd, str):
         cmd = cmd[0]
       if class_str not in class_map:
         class_list.append(class_str)
@@ -945,11 +949,11 @@ class RPNCalc(object):
 
     return False
 
-  def HelpConversions(self, arg):
+  def HelpConversions(self, _):
     self.conversion.DumpHelp()
     return False
 
-  def Quit(self, arg):
+  def Quit(self, _):
     sys.exit(0)
 
   def DefineMacro(self, arg):
@@ -969,19 +973,19 @@ class RPNCalc(object):
       raise MacroNotFound(macro_name)
 
     if self.debug_mode:
-      self._DebugMessage('Executing macro: %s %s\n' % 
-                        (macro_name, ' '.join(self.macros[macro_name])))
+      self._DebugMessage('Executing macro: %s %s\n' %
+                         (macro_name, ' '.join(self.macros[macro_name])))
       self.debug_indent += 1
-    flag =  self.ExecCommands(self.macros[macro_name])
+    flag = self.ExecCommands(self.macros[macro_name])
     if self.debug_mode:
       self.debug_indent -= 1
     return flag
 
-  def ListMacros(self, arg):
+  def ListMacros(self, _):
 
     if self.macros:
       for name in sorted(self.macros):
-        sys.stdout.write('%-15s |  %s\n' % (name, ' '.join(self.macros[name])) )
+        sys.stdout.write('%-15s |  %s\n' % (name, ' '.join(self.macros[name])))
     else:
       sys.stdout.write('No Macros Defined\n')
 
@@ -1015,25 +1019,25 @@ class RPNCalc(object):
       self.ExecuteMacro(arg)
     return True
 
-  def GreaterThan(self, arg):
-    return self._PushConditional(lambda x,y: x>y)
+  def GreaterThan(self, _):
+    return self._PushConditional(lambda x, y: x > y)
 
-  def LessThan(self, arg):
-    return self._PushConditional(lambda x,y: x<y)
+  def LessThan(self, _):
+    return self._PushConditional(lambda x, y: x < y)
 
-  def GreaterThanEqual(self, arg):
-    return self._PushConditional(lambda x,y: x>=y)
+  def GreaterThanEqual(self, _):
+    return self._PushConditional(lambda x, y: x >= y)
 
-  def LessThanEqual(self, arg):
-    return self._PushConditional(lambda x,y: x<=y)
+  def LessThanEqual(self, _):
+    return self._PushConditional(lambda x, y: x <= y)
 
-  def Equal(self, arg):
-    return self._PushConditional(lambda x,y: x==y)
+  def Equal(self, _):
+    return self._PushConditional(lambda x, y: x == y)
 
-  def NotEqual(self, arg):
-    return self._PushConditional(lambda x,y: x!=y)
+  def NotEqual(self, _):
+    return self._PushConditional(lambda x, y: x != y)
 
-  def Not(self, arg):
+  def Not(self, _):
     y = self.stack.pop()
     if y:
       self.stack.push(0)
@@ -1047,7 +1051,7 @@ class RPNCalc(object):
   def _PushConditional(self, cond):
     y = self.stack.pop()
     x = self.stack.pop()
-    if cond(x,y):
+    if cond(x, y):
       self.stack.append(1)
     else:
       self.stack.append(0)
@@ -1073,9 +1077,9 @@ class RPNCalc(object):
   # Display Mode Callbacks
   #
   @staticmethod
-  def _NormalMode(self, value):
+  def _NormalMode(this, value):
     if isinstance(value, complex):
-      letter = 'j' if self.imagj else 'i'
+      letter = 'j' if this.imagj else 'i'
       if value.real == 0:
         return '%s%s' % (value.imag, letter)
 
@@ -1088,12 +1092,12 @@ class RPNCalc(object):
     return str(value)
 
   @staticmethod
-  def _FixedMode(self, value):
-    format_str = '%%.%df' % self.fixed_places
+  def _FixedMode(this, value):
+    format_str = '%%.%df' % this.fixed_places
     return format_str % value
 
   @staticmethod
-  def _HexMode(self, value):
+  def _HexMode(_, value):
     if value >= 0:
       ret = '%X' % value
     else:
@@ -1104,15 +1108,15 @@ class RPNCalc(object):
 
     if value < 0:
       return '-0x' + ret
-    else:
-      return '0x' + ret
+
+    return '0x' + ret
 
   @staticmethod
-  def _BinMode(self, value):
+  def _BinMode(_, value):
     return bin(int(value))
 
   @staticmethod
-  def _DateMode(self, value):
+  def _DateMode(_, value):
 
     ret = ''
 
@@ -1128,14 +1132,13 @@ class RPNCalc(object):
     return ret
 
   @staticmethod
-  def _TimeMode(self, value):
+  def _TimeMode(this, value):
     if value > 31536000:
-      return RPNCalc._DateMode(self, value)
-    else:
-      return RPNCalc._DurationMode(self, value)
+      return RPNCalc._DateMode(this, value)
+    return RPNCalc._DurationMode(this, value)
 
   @staticmethod
-  def _DurationMode(self, value):
+  def _DurationMode(_, value):
     ret = ''
     sign = ' '
     if value < 0:
@@ -1149,29 +1152,29 @@ class RPNCalc(object):
     s = iv % 60
     if d > 0:
       if h == 0 and m == 0 and s == 0:
-        ret = '  %s%dd' % (sign,d)
+        ret = '  %s%dd' % (sign, d)
       else:
-        ret = '  %s%dd%02d:%02d:%02d' % (sign,d,h,m,s)
+        ret = '  %s%dd%02d:%02d:%02d' % (sign, d, h, m, s)
     elif h > 0:
-      ret = '  %s%02d:%02d:%02d' % (sign,h,m,s)
+      ret = '  %s%02d:%02d:%02d' % (sign, h, m, s)
     else:
-      ret = '     %s%02d:%02d' % (sign,m,s)
+      ret = '     %s%02d:%02d' % (sign, m, s)
 
     return ret
 
   @staticmethod
-  def _MoneyMode(self, value):
+  def _MoneyMode(_, value):
     if value < 0:
       ret = '-$'
       value = -value
     else:
       ret = ' $'
-    return (ret + '%.0f.%02d' % 
-        (math.floor(value), int((value + 0.005 - math.floor(value)) * 100)))
+    return (ret + '%.0f.%02d' %
+            (math.floor(value), int((value + 0.005 - math.floor(value)) * 100)))
 
   @staticmethod
-  def _CentMode(self, value):
-    return RPNCalc._MoneyMode(self, value / 100.0)
+  def _CentMode(this, value):
+    return RPNCalc._MoneyMode(this, value / 100.0)
 
 # Match up inputs with regular expressions
 #
@@ -1194,156 +1197,163 @@ TY = 'Type Conversion'
 UR = 'Undo/Redo'
 
 MATCH_TABLE = [
-    ( '.', RPNCalc.DumpState, SM, 'Dump Stack (short form)' ),
-    ( '..', RPNCalc.DumpStateLong, SM, 'Dump Full Stack' ),
-    ( 'd', RPNCalc.Duplicate, SM, 'Duplicate y'),
-    ( 'y', RPNCalc.Drop, SM, 'Drop y'),
-    ( 'D', RPNCalc.Clear, SM, 'Clear Stack'),
-    ( 'R', RPNCalc.Reverse, SM, 'Reverse Stack'),
-    ( 's', RPNCalc.Swap, SM, 'Swap x <-> y'),
-    ( 'rd', RPNCalc.RollDown, SM, 'Roll Stack Down'),
-    ( 'ru', RPNCalc.RollUp, SM, 'Roll Stack Up'),
+    ('.', RPNCalc.DumpState, SM, 'Dump Stack (short form)'),
+    ('..', RPNCalc.DumpStateLong, SM, 'Dump Full Stack'),
+    ('d', RPNCalc.Duplicate, SM, 'Duplicate y'),
+    ('y', RPNCalc.Drop, SM, 'Drop y'),
+    ('D', RPNCalc.Clear, SM, 'Clear Stack'),
+    ('R', RPNCalc.Reverse, SM, 'Reverse Stack'),
+    ('s', RPNCalc.Swap, SM, 'Swap x <-> y'),
+    ('rd', RPNCalc.RollDown, SM, 'Roll Stack Down'),
+    ('ru', RPNCalc.RollUp, SM, 'Roll Stack Up'),
 
-    ( ('1.0, 1., .5', re.compile(r'^-?([0-9]+)?\.[0-9]*e?-?[0-9]*$')), 
-       RPNCalc.PushFloat, NM, 'Floating point numbers' ),
-    ( ('1e6, 2.5e-6', re.compile(r'^-?[0-9]+[0-9]*e-?[0-9]*$')), 
-       RPNCalc.PushFloat, NM, 'Scientific numbers' ),
-    ( ('1+5i, 3-2j', re.compile(r'^-?([0-9]+)?(\.[0-9]+)?[+-]?([0-9]+)?(\.[0-9]+)?[ij]$')), 
-       RPNCalc.PushComplex, NM, 'Complex numbers' ),
-    ( ('0x36, -0x1234', re.compile(r'^-?0x[0-9a-fA-F]+$')),
-        RPNCalc.PushHex, NM, 'Hexidecimal numbers' ),
-    ( ('1001b, -1001b', re.compile(r'^-?0b[0-1]+$')),
-        RPNCalc.PushBin, NM, 'Binary numbers' ),
-    ( ('1, -512', re.compile(r'^-?[0-9]+$')), 
-       RPNCalc.PushInt, NM, 'Integers' ),
-    ( ('4d, 15d', re.compile(r'^-?[0-9]+d$')),
-       RPNCalc.PushDurationDays, NM, 'Time Duration, in days'),
-    ( ('1d14:23:12', re.compile(r'^-?[0-9]+d[0-9]+:[0-5][0-9]:[0-5][0-9]$')),
-       RPNCalc.PushDurationDHMS, NM, 'Time Duration, DdHH:MM:SS' ),
-    ( ('534:12:00', re.compile(r'^-?[0-9]+:[0-5][0-9]:[0-5][0-9]$')), 
-       RPNCalc.PushDurationHMS, NM, 'Time Duration H:MM:SS' ),
-    ( ('536:45', re.compile(r'^-?[0-9]+:[0-5][0-9]$')), 
-       RPNCalc.PushDurationMS, NM, 'Time Duration M:SS' ),
-    ( ('01/14, 2/12', re.compile(r'^[01]?[0-9]/[0-3]?[0-9]$')),
-       RPNCalc.PushDateThisYear, NM, 'Date (this year)'),
-    ( ('01/14/2010, 2/12/1990', re.compile(r'^[01]?[0-9]/[0-3]?[0-9]/[0-9]+$')),
-       RPNCalc.PushDate, NM, 'Date'),
-    ( ('07/30/2006+16:00:00', re.compile(r'^[01]?[0-9]/[0-3]?[0-9]/[0-9]+\+[01]?[0-9]:[0-5][0-9]:[0-5][0-9]$')),
-       RPNCalc.PushDateTime, NM, 'Date'),
-    ( 'imagi', RPNCalc.ImagI, NM, 'Display Complex numbers with i' ),
-    ( 'imagj', RPNCalc.ImagJ, NM, 'Display Complex numbers with j' ),
-    ( 'now', RPNCalc.PushCurrentTime, NM, 'Current time and date' ),
-    ( 'today', RPNCalc.PushToday, NM, 'Current date' ),
-    ( 'mixed', RPNCalc.MixedMode, NM, 'Allow integers and floats' ),
-    ( 'floats', RPNCalc.FloatMode, NM, 'Convert everything to floats (Default)' ),
-    ( 't', RPNCalc.Type, NM, 'Convert float to int (and visa versa)'),
+    (('1.0, 1., .5', re.compile(r'^-?([0-9]+)?\.[0-9]*e?-?[0-9]*$')),
+     RPNCalc.PushFloat, NM, 'Floating point numbers'),
+    (('1e6, 2.5e-6', re.compile(r'^-?[0-9]+[0-9]*e-?[0-9]*$')),
+     RPNCalc.PushFloat, NM, 'Scientific numbers'),
+    (('1+5i, 3-2j', re.compile(
+        r'^-?([0-9]+)?(\.[0-9]+)?[+-]?([0-9]+)?(\.[0-9]+)?[ij]$')),
+     RPNCalc.PushComplex, NM, 'Complex numbers'),
+    (('0x36, -0x1234', re.compile(r'^-?0x[0-9a-fA-F]+$')),
+     RPNCalc.PushHex, NM, 'Hexidecimal numbers'),
+    (('1001b, -1001b', re.compile(r'^-?0b[0-1]+$')),
+     RPNCalc.PushBin, NM, 'Binary numbers'),
+    (('1, -512', re.compile(r'^-?[0-9]+$')),
+     RPNCalc.PushInt, NM, 'Integers'),
+    (('4d, 15d', re.compile(r'^-?[0-9]+d$')),
+     RPNCalc.PushDurationDays, NM, 'Time Duration, in days'),
+    (('1d14:23:12', re.compile(r'^-?[0-9]+d[0-9]+:[0-5][0-9]:[0-5][0-9]$')),
+     RPNCalc.PushDurationDHMS, NM, 'Time Duration, DdHH:MM:SS'),
+    (('534:12:00', re.compile(r'^-?[0-9]+:[0-5][0-9]:[0-5][0-9]$')),
+     RPNCalc.PushDurationHMS, NM, 'Time Duration H:MM:SS'),
+    (('536:45', re.compile(r'^-?[0-9]+:[0-5][0-9]$')),
+     RPNCalc.PushDurationMS, NM, 'Time Duration M:SS'),
+    (('01/14, 2/12', re.compile(r'^[01]?[0-9]/[0-3]?[0-9]$')),
+     RPNCalc.PushDateThisYear, NM, 'Date (this year)'),
+    (('01/14/2010, 2/12/1990', re.compile(r'^[01]?[0-9]/[0-3]?[0-9]/[0-9]+$')),
+     RPNCalc.PushDate, NM, 'Date'),
+    (('07/30/2006+16:00:00',
+      re.compile(
+          r'^[01]?[0-9]/[0-3]?[0-9]/[0-9]+\+[01]?[0-9]:'
+          '[0-5][0-9]:[0-5][0-9]$')),
+     RPNCalc.PushDateTime, NM, 'Date'),
+    ('imagi', RPNCalc.ImagI, NM, 'Display Complex numbers with i'),
+    ('imagj', RPNCalc.ImagJ, NM, 'Display Complex numbers with j'),
+    ('now', RPNCalc.PushCurrentTime, NM, 'Current time and date'),
+    ('today', RPNCalc.PushToday, NM, 'Current date'),
+    ('mixed', RPNCalc.MixedMode, NM, 'Allow integers and floats'),
+    ('floats', RPNCalc.FloatMode, NM, 'Convert everything to floats (Default)'),
+    ('t', RPNCalc.Type, NM, 'Convert float to int (and visa versa)'),
 
-    ( '*', RPNCalc.Multiply, OP, 'x * y' ),
-    ( '+', RPNCalc.Add, OP, 'x + y' ),
-    ( '-', RPNCalc.Subtract, OP, 'x - y' ),
-    ( '/', RPNCalc.Divide, OP, 'x / y'),
+    ('*', RPNCalc.Multiply, OP, 'x * y'),
+    ('+', RPNCalc.Add, OP, 'x + y'),
+    ('-', RPNCalc.Subtract, OP, 'x - y'),
+    ('/', RPNCalc.Divide, OP, 'x / y'),
 
-    ( '&', RPNCalc.LogicalAnd, LO, 'x & y (Logical And)'),
-    ( '|', RPNCalc.LogicalOr, LO, 'x | y (Logical Or)'),
-    ( '~', RPNCalc.LogicalNot, LO,'~y (Logical XOR)'),
-    ( '^', RPNCalc.LogicalXOR, LO, 'x ^ y (Logical XOR)'),
-    ( '>>', RPNCalc.LogicalShiftRight, LO, 'x >> y (Logical Shift Right)'),
-    ( '<<', RPNCalc.LogicalShiftLeft, LO, 'x << y (Logical Shift Left)'),
+    ('&', RPNCalc.LogicalAnd, LO, 'x & y (Logical And)'),
+    ('|', RPNCalc.LogicalOr, LO, 'x | y (Logical Or)'),
+    ('~', RPNCalc.LogicalNot, LO, '~y (Logical XOR)'),
+    ('^', RPNCalc.LogicalXOR, LO, 'x ^ y (Logical XOR)'),
+    ('>>', RPNCalc.LogicalShiftRight, LO, 'x >> y (Logical Shift Right)'),
+    ('<<', RPNCalc.LogicalShiftLeft, LO, 'x << y (Logical Shift Left)'),
 
-    ( 'log10', RPNCalc.Log10, SC, 'Log (base 10)'),
-    ( 'log', RPNCalc.Log, SC, 'Log (base e)'),
-    ( 'sq', RPNCalc.Square, SC, 'Square'),
-    ( 'sqrt', RPNCalc.SquareRoot, SC, 'Square Root'),
-    ( '%', RPNCalc.Mod, SC, 'x % y (Mod)'),
-    ( '!', RPNCalc.Factorial, SC, 'y! (Factorial)'),
-    ( 'inv', RPNCalc.Inverse, SC, '1.0/y (inverse)'),
-    ( 'neg', RPNCalc.Negate, SC, '-y (negate)'),
-    ( 'abs', RPNCalc.AbsoluteValue, SC, 'abs(y) (absolute value)'),
-    ( '**', RPNCalc.PowerOf, SC, 'x ** y  (power of)' ),
+    ('log10', RPNCalc.Log10, SC, 'Log (base 10)'),
+    ('log', RPNCalc.Log, SC, 'Log (base e)'),
+    ('sq', RPNCalc.Square, SC, 'Square'),
+    ('sqrt', RPNCalc.SquareRoot, SC, 'Square Root'),
+    ('%', RPNCalc.Mod, SC, 'x % y (Mod)'),
+    ('!', RPNCalc.Factorial, SC, 'y! (Factorial)'),
+    ('inv', RPNCalc.Inverse, SC, '1.0/y (inverse)'),
+    ('neg', RPNCalc.Negate, SC, '-y (negate)'),
+    ('abs', RPNCalc.AbsoluteValue, SC, 'abs(y) (absolute value)'),
+    ('**', RPNCalc.PowerOf, SC, 'x ** y  (power of)'),
 
-    ( 'sin', RPNCalc.Sin, TR, 'Sin'),
-    ( 'cos', RPNCalc.Cos, TR, 'Cos'),
-    ( 'tan', RPNCalc.Tan, TR, 'Tan'),
-    ( 'asin', RPNCalc.ASin, TR, 'Arc Sin'),
-    ( 'acos', RPNCalc.ACos, TR, 'Arc Cos'),
-    ( 'atan', RPNCalc.ATan, TR, 'Arc Tan'),
-    ( 'deg', RPNCalc.DegreeMode, TR, 'Use degrees for trig functions'),
-    ( 'rad', RPNCalc.RadianMode, TR, 'Use radians for trig functions (default)'),
+    ('sin', RPNCalc.Sin, TR, 'Sin'),
+    ('cos', RPNCalc.Cos, TR, 'Cos'),
+    ('tan', RPNCalc.Tan, TR, 'Tan'),
+    ('asin', RPNCalc.ASin, TR, 'Arc Sin'),
+    ('acos', RPNCalc.ACos, TR, 'Arc Cos'),
+    ('atan', RPNCalc.ATan, TR, 'Arc Tan'),
+    ('deg', RPNCalc.DegreeMode, TR, 'Use degrees for trig functions'),
+    ('rad', RPNCalc.RadianMode, TR, 'Use radians for trig functions (default)'),
 
-    ( 'c', RPNCalc.Copy, CB, 'Copy y'),
-    ( 'x', RPNCalc.Cut, CB, 'Cut (Pop) y'),
-    ( 'v', RPNCalc.Paste, CB, 'Paste (Push) y'),
-    ( 'pc', RPNCalc.PositionalCopy, CB, 'Copy stack[y], where x is index 0'),
-    ( 'px', RPNCalc.PositionalCut, CB, 'Cut stack[y], where x is index 0'),
-    ( 'pv', RPNCalc.PositionalPaste, CB, 
-        'Paste (insert) at stack[y], where x is index 0'),
-    ( ('c:<varname>', re.compile(r'^c:[a-zA-Z0-9_]+$')), 
-       RPNCalc.CopyVar, CB, 'Copy y to varname'),
-    ( ('x:<varname>', re.compile(r'^x:[a-zA-Z0-9_]+$')), 
-       RPNCalc.CutVar, CB, 'Cut y to varname'),
-    ( ('v:<varname>', re.compile(r'^v:[a-zA-Z0-9_]+$')), 
-       RPNCalc.PasteVar, CB, 'paste varname to stack'),
-    ( 'l:v', RPNCalc.DumpVars, CB, 'Show all defined variables'),
-    ( 'x', RPNCalc.Cut, CB, 'Cut (Pop) y'),
-    ( 'v', RPNCalc.Paste, CB, 'Paste (Push) y'),
-    ( 'C', RPNCalc.CopyStack, CB, 'Copy stack'),
-    ( 'X', RPNCalc.CutStack, CB, 'Cut stack'),
-    ( 'V', RPNCalc.PasteStack, CB, 'Paste stack'),
+    ('c', RPNCalc.Copy, CB, 'Copy y'),
+    ('x', RPNCalc.Cut, CB, 'Cut (Pop) y'),
+    ('v', RPNCalc.Paste, CB, 'Paste (Push) y'),
+    ('pc', RPNCalc.PositionalCopy, CB, 'Copy stack[y], where x is index 0'),
+    ('px', RPNCalc.PositionalCut, CB, 'Cut stack[y], where x is index 0'),
+    ('pv', RPNCalc.PositionalPaste, CB,
+     'Paste (insert) at stack[y], where x is index 0'),
+    (('c:<varname>', re.compile(r'^c:[a-zA-Z0-9_]+$')),
+     RPNCalc.CopyVar, CB, 'Copy y to varname'),
+    (('x:<varname>', re.compile(r'^x:[a-zA-Z0-9_]+$')),
+     RPNCalc.CutVar, CB, 'Cut y to varname'),
+    (('v:<varname>', re.compile(r'^v:[a-zA-Z0-9_]+$')),
+     RPNCalc.PasteVar, CB, 'paste varname to stack'),
+    ('l:v', RPNCalc.DumpVars, CB, 'Show all defined variables'),
+    ('x', RPNCalc.Cut, CB, 'Cut (Pop) y'),
+    ('v', RPNCalc.Paste, CB, 'Paste (Push) y'),
+    ('C', RPNCalc.CopyStack, CB, 'Copy stack'),
+    ('X', RPNCalc.CutStack, CB, 'Cut stack'),
+    ('V', RPNCalc.PasteStack, CB, 'Paste stack'),
 
-    ( 'r', RPNCalc.Redo, UR, 'Redo last undo (only if it was last command)'),
-    ( 'u', RPNCalc.Undo, UR, 'Undo to last [Enter] state'),
+    ('r', RPNCalc.Redo, UR, 'Redo last undo (only if it was last command)'),
+    ('u', RPNCalc.Undo, UR, 'Undo to last [Enter] state'),
 
-    ( 'q', RPNCalc.Quit, EX, 'Quit/Exit'),
+    ('q', RPNCalc.Quit, EX, 'Quit/Exit'),
 
-    ( ('s:<path>', re.compile(r'^s:.+$')), RPNCalc.SourceFile, MS, 
+    (('s:<path>', re.compile(r'^s:.+$')), RPNCalc.SourceFile, MS,
      'Execute commands found in <path>'),
-    ( '?', RPNCalc.HelpShort, MS, 'Short Help'),
-    ( '??', RPNCalc.Help, MS, 'Verbose Help'),
-    ( '???', RPNCalc.Documentation, MS, 'Full Documentation'),
+    ('?', RPNCalc.HelpShort, MS, 'Short Help'),
+    ('??', RPNCalc.Help, MS, 'Verbose Help'),
+    ('???', RPNCalc.Documentation, MS, 'Full Documentation'),
 
-    ( 'sum', RPNCalc.Sum, ST, 'Sum All Arguments'),
-    ( 'mean', RPNCalc.Mean, ST, 'Mean All Arguments'),
-    ( 'median', RPNCalc.Median, ST, 'Median All Arguments'),
+    ('sum', RPNCalc.Sum, ST, 'Sum All Arguments'),
+    ('mean', RPNCalc.Mean, ST, 'Mean All Arguments'),
+    ('median', RPNCalc.Median, ST, 'Median All Arguments'),
 
-    ( 'fixed', RPNCalc.FixedMode, MO, 'Turn on fixed-width mode (y holds sig digits)'),
-    ( 'hex', RPNCalc.HexMode, MO, 'Turn on hexadecimal display'),
-    ( 'bin', RPNCalc.BinaryMode, MO, 'Turn on binary display'),
-    ( 'dur', RPNCalc.DurationMode, MO, 'Turn on duration (time) display'),
-    ( 'date', RPNCalc.DateMode, MO, 'Turn on date display'),
-    ( 'time', RPNCalc.TimeMode, MO, 'Turn on date or duration (auto select) display'),
-    ( '$', RPNCalc.MoneyMode, MO, 'Turn on Money Display mode'),
-    ( 'cent', RPNCalc.CentMode, MO, 'Turn on Cent-Wise Money Display mode'),
-    ( 'normal', RPNCalc.NormalMode, MO, 'Turn off special display modes'),
-    ( 'batch', RPNCalc.BatchMode, MO, 'Only output formatted results'),
-    ( 'interactive', RPNCalc.InteractiveMode, MO, 'Show interactive stack dump'),
-    ( 'manual', RPNCalc.ManualMode, MO, 
-      'Do not automatically change display modes'),
-    ( 'auto', RPNCalc.AutoMode, MO, 
-      'Automatically change display modes based on input syntax (default)'),
+    ('fixed', RPNCalc.FixedMode, MO,
+     'Turn on fixed-width mode (y holds sig digits)'),
+    ('hex', RPNCalc.HexMode, MO, 'Turn on hexadecimal display'),
+    ('bin', RPNCalc.BinaryMode, MO, 'Turn on binary display'),
+    ('dur', RPNCalc.DurationMode, MO, 'Turn on duration (time) display'),
+    ('date', RPNCalc.DateMode, MO, 'Turn on date display'),
+    ('time', RPNCalc.TimeMode, MO,
+     'Turn on date or duration (auto select) display'),
+    ('$', RPNCalc.MoneyMode, MO, 'Turn on Money Display mode'),
+    ('cent', RPNCalc.CentMode, MO, 'Turn on Cent-Wise Money Display mode'),
+    ('normal', RPNCalc.NormalMode, MO, 'Turn off special display modes'),
+    ('batch', RPNCalc.BatchMode, MO, 'Only output formatted results'),
+    ('interactive', RPNCalc.InteractiveMode, MO, 'Show interactive stack dump'),
+    ('manual', RPNCalc.ManualMode, MO,
+     'Do not automatically change display modes'),
+    ('auto', RPNCalc.AutoMode, MO,
+     'Automatically change display modes based on input syntax (default)'),
 
-    ( 'debug', RPNCalc.DebugMode, DB, 'Turn on expression debug (show all stack steps)' ),
-    ( 'nodebug', RPNCalc.NoDebugMode, DB, 'Turn off expression debug' ),
+    ('debug', RPNCalc.DebugMode, DB,
+     'Turn on expression debug (show all stack steps)'),
+    ('nodebug', RPNCalc.NoDebugMode, DB, 'Turn off expression debug'),
 
-    ( ('mph>min/mile, yard*yard>ft*ft',
-       re.compile('^[a-z*]+(/[a-z*]+)?>[a-z*]+(/[a-z*]+)?$')), 
-       RPNCalc.Convert, TY, 'Convert between number types'),
-    ( 'l:c', RPNCalc.HelpConversions, TY, 'Dump all known conversion keys'),
+    (('mph>min/mile, yard*yard>ft*ft',
+      re.compile('^[a-z*]+(/[a-z*]+)?>[a-z*]+(/[a-z*]+)?$')),
+     RPNCalc.Convert, TY, 'Convert between number types'),
+    ('l:c', RPNCalc.HelpConversions, TY, 'Dump all known conversion keys'),
 
-    ( ('m:<name> x y z...', re.compile('^m:[a-zA-Z_0-9]+ .+$')),
-      RPNCalc.DefineMacro, MA, 'Define a macro' ),
-    ( ('@<name>', re.compile(r'^@[a-zA-Z_0-9]+$')),
-      RPNCalc.ExecuteMacro, MA, 'Execute a defined macro' ),
-    ( ('?<name>', re.compile(r'^\?[a-zA-Z_0-9]+$')),
-      RPNCalc.ExecuteConditional, MA, 
-      'Pop y and execute <macro> only if non-zero' ),
-    ( 'l:m', RPNCalc.ListMacros, MA, 'List defined macros'),
-    ( '>', RPNCalc.GreaterThan, MA, '1 if x > y, 0 otherwise'),
-    ( '<', RPNCalc.LessThan, MA, '1 if x < y, 0 otherwise'),
-    ( '>=', RPNCalc.GreaterThanEqual, MA, '1 if x >= y, 0 otherwise'),
-    ( '<=', RPNCalc.LessThanEqual, MA, '1 if x <= y, 0 otherwise'),
-    ( '==', RPNCalc.Equal, MA, '1 if x == y, 0 otherwise'),
-    ( '!=', RPNCalc.NotEqual, MA, '1 if x != y, 0 otherwise'),
-    ( 'not', RPNCalc.Not, MA, '1 if y == 0, 0 otherwise'),
+    (('m:<name> x y z...', re.compile('^m:[a-zA-Z_0-9]+ .+$')),
+     RPNCalc.DefineMacro, MA, 'Define a macro'),
+    (('@<name>', re.compile(r'^@[a-zA-Z_0-9]+$')),
+     RPNCalc.ExecuteMacro, MA, 'Execute a defined macro'),
+    (('?<name>', re.compile(r'^\?[a-zA-Z_0-9]+$')),
+     RPNCalc.ExecuteConditional, MA,
+     'Pop y and execute <macro> only if non-zero'),
+    ('l:m', RPNCalc.ListMacros, MA, 'List defined macros'),
+    ('>', RPNCalc.GreaterThan, MA, '1 if x > y, 0 otherwise'),
+    ('<', RPNCalc.LessThan, MA, '1 if x < y, 0 otherwise'),
+    ('>=', RPNCalc.GreaterThanEqual, MA, '1 if x >= y, 0 otherwise'),
+    ('<=', RPNCalc.LessThanEqual, MA, '1 if x <= y, 0 otherwise'),
+    ('==', RPNCalc.Equal, MA, '1 if x == y, 0 otherwise'),
+    ('!=', RPNCalc.NotEqual, MA, '1 if x != y, 0 otherwise'),
+    ('not', RPNCalc.Not, MA, '1 if y == 0, 0 otherwise'),
 ]
 
 MAX_STACK_ARGS = 10
@@ -1354,7 +1364,7 @@ MAX_HELP_LINE_LENGTH = 80
 
 def main(rpn_calc=None):
   sys.stdout.write('Try ? for help\n')
-  
+
   histfile = os.path.join(os.path.expanduser("~"), ".rpnhist")
   try:
     readline.read_history_file(histfile)
@@ -1365,7 +1375,6 @@ def main(rpn_calc=None):
   if rpn_calc is None:
     rpn_calc = RPNCalc()
   stack_changed = False
-  last_command = '?'
 
   while True:
 
@@ -1374,14 +1383,14 @@ def main(rpn_calc=None):
       rpn_calc.Snapshot()
 
     try:
-      line = raw_input(rpn_calc.MakePrompt())
+      line = input(rpn_calc.MakePrompt())
     except EOFError:
       sys.stdout.write('\n')
       sys.exit(0)
 
     stack_changed = rpn_calc.ParseLine(line, True)
     rpn_calc.debug_indent = 0
-    
+
 def batch(args):
 
   main_continue = False
@@ -1398,7 +1407,7 @@ def batch(args):
     for arg in args:
       if rpn_calc.ParseLine(arg, False):
         rpn_calc.DumpState()
-  except Exception, e:
+  except Exception as e:  # pylint: disable=broad-except
     sys.stderr.write('%s\n' % e)
     rc = 1
 
