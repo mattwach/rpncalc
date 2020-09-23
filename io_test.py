@@ -166,6 +166,50 @@ DATA = """
   I rad
   A
 
+# --- Simple Clipboard ---
+
+  I D 123 c v v
+  O 123.0 x = 123.0 y = 123.0 |>
+
+  I D 123 456 x 789 v
+  O 123.0 x = 789.0 y = 456.0 |>
+
+# --- Stack Clipboard ---
+
+  I D 1 2 3 4 1 pc v
+  O 1.0 2.0 3.0 x = 4.0 y = 3.0 |>
+
+  I D 1 2 3 4 1 px v
+  O 1.0 2.0 x = 4.0 y = 3.0 |>
+
+  I D 1 2 3 4 c 2 pv
+  O 1.0 2.0 4.0 x = 3.0 y = 4.0 |>
+
+# --- Variable Clipboard ---
+
+  I D 1234 c:myvar 0 v:myvar
+  O 1234.0 x = 0.0 y = 1234.0 |>
+
+  I D 5678 x:myvar 0 v:myvar
+  O x = 0.0 y = 5678.0 |>
+
+  I D l:v
+  O c = 299792458.0 e = 2.71828182846 myvar = 5678.0 pi = 3.14159265359 |>
+
+# --- Full Stack Clipboard ---
+
+  I D 1 2 3 C
+  O 1.0 x = 2.0 y = 3.0 |>
+
+  I D V
+  O 1.0 x = 2.0 y = 3.0 |>
+
+  I D 4 5 6 X
+  O |>
+
+  I V
+  O 4.0 x = 5.0 y = 6.0 |>
+
 # --- Integers ---
 
   I D normal mixed 1 2.0

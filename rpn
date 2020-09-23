@@ -710,7 +710,7 @@ class RPNCalc(object):
     pos = int(self.stack.pop())
     if pos < 0:
       raise IndexError()
-    self.stack.insert(-(pos + 1), self.clipboard)
+    self.stack.insert(-pos, self.clipboard)
     return True
 
   def CutStack(self, _):

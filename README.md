@@ -232,8 +232,9 @@ You can copy between this clipboard and the stack with 'c' and 'v'.  You can
 also 'cut' (pop) the last value on the stack to the clipboard with 'x'.
 
 You can also use pc, px, and pv to cut. copy and paste values deeper in the
-stack.  Here is an example that solves the quadratic formula without creating
-named global variables.  The Formula is (sqrt(b*b - 4ac) - b)/(2a)
+stack.  For each of these, an 'index' argument is pulled from the stack to
+determine the value to cut, copy or paste.  For example `0 pc` is the same
+and just `c`.
 
 ### Variable Clipboard
 
@@ -249,9 +250,9 @@ also dump the current set of defined variables for reference
 
 ### Stack Clipboard
 
-You can also copy and paste the entire clipboard with the capitalized
-operators 'X', 'C' and 'V'.  Note that 'V' completely overwrites the existing
-stack.  The 'X' operator is also useful for cleaning up miscellaneous values
+You can also copy and paste the entire stack with the capitalized
+operators `X`, `C` and `V`.  Note that `V` completely overwrites the existing
+stack.  The `X` (or `D`) operator is also useful for cleaning up miscellaneous values
 from a stack after a calculation.
 
 #### Examples:
@@ -282,7 +283,7 @@ stack instead.  This is safer but slightly more complex to implement
     v                     Paste (Push) y
     pc                    Copy stack[y], where x is index 0
     px                    Cut stack[y], where x is index 0
-    pv                    Paste (insert) at stack[y], where x is index 0
+    pv                    Paste (insert after) at stack[y], where x is index 0
     c:<varname>           Copy y to varname
     x:<varname>           Cut y to varname
     v:<varname>           paste varname to stack
