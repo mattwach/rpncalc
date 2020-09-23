@@ -60,6 +60,20 @@ DATA = """
   I D 12.34e-6
   O y = 1.234e-05 |>
 
+# --- Operators ---
+
+  I D 4 5 +
+  O y = 9.0 |>
+
+  I D 4 5 -
+  O y = -1.0 |>
+
+  I D 4 5 *
+  O y = 20.0 |>
+
+  I D 4 5 /
+  O y = 0.8 |>
+
 # --- Integers ---
 
   I D mixed 1 2.0
@@ -290,16 +304,17 @@ def parse_line(line_number, line, p):
 
   line = line.strip()
   if not line:
-    return
+    return 0
 
   if line.startswith('#'):
-    return
+    return 0
 
   tokens = line.split()
   cmd = tokens[0]
   if cmd == 'I':
     p.stdin.write(' '.join(tokens[1:]))
     p.stdin.write('\n')
+    return 0
   elif cmd == 'O':
     compare_output(line_number, tokens[1:], get_output(p.stdout))
   elif cmd == 'E':
@@ -309,6 +324,8 @@ def parse_line(line_number, line, p):
   else:
     raise UnknownCommandError('Unknown Command: %s' % line)
 
+  return 1
+
 def main():
   p = subprocess.Popen(
       ['python', '-u', 'rpn'],
@@ -317,18 +334,24 @@ def main():
       stderr=subprocess.PIPE)
 
   get_output(p.stdout)
+  tests_passed = 0
+  tests_failed = 0
 
   for line_number, line in enumerate(DATA.split('\n')):
     try:
-      parse_line(line_number + 1, line, p)
+      tests_passed += parse_line(line_number + 1, line, p)
     except OutputMismatch as e:
-      p.terminate()
-      p.wait()
-      sys.exit(e)
+      sys.stderr.write('%s\n' % e)
+      tests_failed += 1
 
   # Wrap up
+  sys.stdout.write('%s: %d / %d tests passed\n' % (
+      __file__, tests_passed, tests_passed + tests_failed))
   p.terminate()
   p.wait()
+
+  if tests_failed:
+    sys.exit(1)
 
 if __name__ == '__main__':
   main()
