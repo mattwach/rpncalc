@@ -391,6 +391,22 @@ DATA = """
   I r
   E While parsing r: No Redo History Available !!
   O |>
+
+# --- Sourcing An External File ---
+
+  I D s:sample.txt
+  O y = 9.0 |>
+
+# --- Statistics ---
+
+  I D 0.67 36 37 C sum
+  O y = 73.67 |>
+
+  I V mean
+  O y = 24.5566666667 |>
+
+  I V median
+  O y = 36.0 |>
 """
 
 class Error(Exception):
