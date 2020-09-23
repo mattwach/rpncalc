@@ -882,12 +882,10 @@ class RPNCalc(object):
     return self.Help(arg, long_command_list=True, docs_mode=True)
 
   def Help(self, _, long_command_list=True, docs_mode=False):
-
-    sys.stdout.write('\n')
     if docs_mode:
       sys.stdout.write(calcdocs.DOCS['introduction'])
 
-    sys.stdout.write('\n\nKnown Commands: \n')
+    sys.stdout.write('\n\n# Detailed Documentation\n')
 
     class_list = []
     class_map = {}
@@ -904,18 +902,11 @@ class RPNCalc(object):
         class_map[class_str].append('  %-20s' % cmd)
 
     for class_str in class_list:
-      sys.stdout.write('\n  %s\n' % class_str)
+      sys.stdout.write('\n## %s\n' % class_str)
 
       if docs_mode:
-        sys.stdout.write('  ')
-        sys.stdout.write('=' * len(class_str))
-        sys.stdout.write('\n')
-        for line in calcdocs.DOCS[class_str].split('\n'):
-          sys.stdout.write('    ')
-          sys.stdout.write(line)
-          sys.stdout.write('\n')
-        sys.stdout.write('    Supported Commands\n')
-        sys.stdout.write('    ------------------\n\n')
+        sys.stdout.write(calcdocs.DOCS[class_str])
+        sys.stdout.write('\n### Supported Commands\n\n')
 
       if not long_command_list:
         sys.stdout.write('  ')
@@ -927,8 +918,6 @@ class RPNCalc(object):
           if line_length > MAX_HELP_LINE_LENGTH:
             sys.stdout.write('\n  ')
             line_length = 2
-        if docs_mode:
-          sys.stdout.write('    ')
         sys.stdout.write(line)
 
     if not docs_mode:

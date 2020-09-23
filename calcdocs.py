@@ -22,89 +22,106 @@ DOCS['short'] = """
 """
 
 DOCS['introduction'] = """
-So why another calculator app?  That is an excellent question.  Knowing that
-your time is valuable, this short block of text will attempt to give you the
-"short sell" for rpncalc.
+# rpncalc Overview
+
+Why another calculator app?  That is an excellent question.  Knowing that your
+time is valuable, this short block of text will give you the "short sell" for
+`rpncalc`.
 
 First, what is an RPN calculator? It's a calculator that uses a stack.  Once
 learned, it allows many people to enter expressions more quickly and with fewer
-mistakes.  Check out more on the official wiki:
+mistakes.  Check out more here
 http://en.wikipedia.org/wiki/Reverse_Polish_notation
 
 rpncalc takes your basic RPN calculator design and adds many user convenience
 tools.  These include the following:
 
-Robust Conversion Support
-------------------------
+## Basic Examples
 
-  Q: How many acres in a square mile?
-  A: 1 mi*mi>acres
-  y = 640.00000038    | 640.000
+5 + 5
 
-  Q: How many teaspoons in a pint?
-  A: 1 pint>tsp
-  y = 96.000000073    | 96.000
+    |> 5 5 +
+    y = 10.0  
 
-  Q: How many inch-pounds is 10 newton-meters
-  A: 10 n*m>in*lbs
-  y = 88.5043147656   | 88.504
+sqrt(3 * 3 + 4 * 4).  A few different ways.
 
-  Q: How many gallons does a 25x25 yd pool that is 4 feet deep hold?
-  A: 4 ft>yards 25 25 * * yard*yard*yard>gallon
-  y = 168311.688488   | 168311.688
+    |> 3 3 * 4 4 * + sqrt
+    y = 5.0            
 
-Time and Duration Support
--------------------------
+    |> 3 2 ** 4 2 ** + sqrt
+    y = 5.0            
 
-  Q: How many days until Christmas?
-  A: 12/25 today -
-     y = 11404800.0      |    132d
+    |> 3 d * 4 d * + sqrt
+    y = 5.0            
 
-  Q: How fast do I need to run to finish a 5k in < 20 minutes?
-  A: 20:00 5000 meters>miles /
-     y = 386.24256       |       06:26
+Area of a circle of radius 5
 
-  Q: What time will it be 92 hours from now?
-  A: now 92:00:00 +
-     y = 1313783186.93   | 08/19/2011+12:46:26 (Fri)
+    |> 5 2 ** v:pi *
+    y = 78.5398163397
 
-Money Support
--------------
+## Robust Conversion Support
 
-  Q: Calculate my bill with 9% tax
-  A: $ 1.24 5.34 6.78 sum 1.09 *
-     y = 14.5624         |  $14.56
+    Q: How many acres in a square mile?
+    A: 1 mi*mi>acres
+    y = 640.00000038    | 640.000
 
-  Q: Help me balance my checkbook (cent entry mode)
-  A: cent -4234 -1215 -500 -2738 50000 
+    Q: How many teaspoons in a pint?
+    A: 1 pint>tsp
+    y = 96.000000073    | 96.000
 
-Hex and Binary Support
-----------------------
+    Q: How many inch-pounds is 10 newton-meters
+    A: 10 n*m>in*lbs
+    y = 88.5043147656   | 88.504
+
+    Q: How many gallons does a 25x25 yd pool that is 4 feet deep hold?
+    A: 4 ft>yards 25 25 * * yard*yard*yard>gallon
+    y = 168311.688488   | 168311.688
+
+## Time and Duration Support
+
+    Q: How many days until Christmas?
+    A: 12/25 today -
+       y = 11404800.0      |    132d
+
+    Q: How fast do I need to run to finish a 5k in < 20 minutes?
+    A: 20:00 5000 meters>miles /
+       y = 386.24256       |       06:26
+
+    Q: What time will it be 92 hours from now?
+    A: now 92:00:00 +
+       y = 1313783186.93   | 08/19/2011+12:46:26 (Fri)
+
+## Money Support
+
+    Q: Calculate my bill with 9% tax
+    A: $ 1.24 5.34 6.78 sum 1.09 *
+       y = 14.5624         |  $14.56
+
+    Q: Help me balance my checkbook (cent entry mode)
+    A: cent -4234 -1215 -500 -2738 50000 
+
+## Hex and Binary Support
 
 Support for hexidecimal data entry and views along with standard operators
 
-  0x80 - Enter a hex number
-  0b1000 - Enter a binary number
+    0x80 - Enter a hex number
+    0b1000 - Enter a binary number
 
-Multiple Undo & Redo
---------------------
+## Multiple Undo & Redo
 
 Have a typo that blitzed your stack?  Walk backward and forward through stack
 states.
 
-Readline Support
-----------------
+## Readline Support
 
 All the readline goodness, such as persistent history and robust key editing
 support
 
-Variables and Macros
---------------------
+## Variables and Macros
 
 Automate and simplify complex and repetitive tasks
 
-Batch and Interactive Modes
----------------------------
+## Batch and Interactive Modes
 
 Supports easy piping of results when run with arguments and an interactive
 mode when run without arguments.
@@ -113,7 +130,7 @@ mode when run without arguments.
 DOCS['Clipboard'] = r"""
 rpncalc supports 3 types of clipboards:
 
-Standard Clipboard
+### Standard Clipboard
 
 You can copy between this clipboard and the stack with 'c' and 'v'.  You can
 also 'cut' (pop) the last value on the stack to the clipboard with 'x'.
@@ -122,153 +139,151 @@ You can also use pc, px, and pv to cut. copy and paste values deeper in the
 stack.  Here is an example that solves the quadratic formula without creating
 named global variables.  The Formula is (sqrt(b*b - 4ac) - b)/(2a)
 
-Variable Clipboard
+### Variable Clipboard
 
 This clipboard allows you to cut copy and paste to variable names, you can
 also dump the current set of defined variables for reference
 
-  Examples:
+#### Examples:
 
-  now c:start_time   # copy the current time into 'start_time'
-  now v:start_time - # Find the delta between 'start_time' and the current
-                     # time
-  l:v                # see what variables are currently defined
+    now c:start_time   # copy the current time into 'start_time'
+    now v:start_time - # Find the delta between 'start_time' and the current
+                       # time
+    l:v                # see what variables are currently defined
 
-Stack Clipboard
+### Stack Clipboard
 
 You can also copy and paste the entire clipboard with the capitalized
 operators 'X', 'C' and 'V'.  Note that 'V' completely overwrites the existing
 stack.  The 'X' operator is also useful for cleaning up miscellaneous values
 from a stack after a calculation.
 
-Examples:
+#### Examples:
 
 This example uses named variables.  The risks here are typical global variable
 risks, such as submacros using the same varible names or a macro wiping out
 a variable you assumed was safe:
 
-m:quadratic1              \ # assume the stack contains a, b, c, in order
-  x:c x:b x:a             \ # grab the variables
-  v:b d * 4 v:a v:c * * - \ # w = b*b-4*a*c  stack is: w
-  sqrt v:b -              \ # x = sqrt(w) - b
-  2 v:a * /                 # x/2a completes the equation
+    m:quadratic1              \ # assume the stack contains a, b, c, in order
+      x:c x:b x:a             \ # grab the variables
+      v:b d * 4 v:a v:c * * - \ # w = b*b-4*a*c  stack is: w
+      sqrt v:b -              \ # x = sqrt(w) - b
+      2 v:a * /                 # x/2a completes the equation
 
 This mixup uses positional stack commands to keep the relevant variables on the
 stack instead.  This is safer but slightly more complex to implement
 
-m:quadratic2                 \ # assume the stack contains a, b, c in order
-  1 pc v v *                 \ # grab b and push w=b*b, stack is a b c w
-  3 pc v 2 px v 4 * * - sqrt \ # Calculate x = sqrt(w - 4ac), stack is a b x
-  s -                        \ # calculate y=x-b, stact is a y
-  s 2 * /                      # y/2a completes the equation
+    m:quadratic2                 \ # assume the stack contains a, b, c in order
+      1 pc v v *                 \ # grab b and push w=b*b, stack is a b c w
+      3 pc v 2 px v 4 * * - sqrt \ # Calculate x = sqrt(w - 4ac), stack is a b x
+      s -                        \ # calculate y=x-b, stact is a y
+      s 2 * /                      # y/2a completes the equation
 """
 
 DOCS['Display Modes'] = """
 On startup, rpncalc will show results in either floating point or integer format, like
 this:
 
-10.0  42.0
-x = 1234.0         
-y = 3.14159265359
+    10.0  42.0
+    x = 1234.0         
+    y = 3.14159265359
 
 There are, however, a number of optional display modes available that  also
 show the data in a converted format.  Here is the basic catalogue:
 
-3 fixed # Fixed Mode (variable number of digits):
+    3 fixed # Fixed Mode (variable number of digits):
 
-10.0  42.0
-x = 1234.0          | 1234.000
-y = 3.14159265359   | 3.142
+    10.0  42.0
+    x = 1234.0          | 1234.000
+    y = 3.14159265359   | 3.142
 
-hex # Hexidecimal
+    hex # Hexidecimal
 
-10.0  42.0
-x = 1234.0          | 0x04D2
-y = 3.14159265359   | 0x03
+    10.0  42.0
+    x = 1234.0          | 0x04D2
+    y = 3.14159265359   | 0x03
 
-bin # Binary
+    bin # Binary
 
-0b1000 0b1001
-x = 8               | 0b1000
-y = 9               | 0b1001
+    0b1000 0b1001
+    x = 8               | 0b1000
+    y = 9               | 0b1001
 
-dur # Convert from seconds to time duration
+    dur # Convert from seconds to time duration
 
-10.0  42.0
-x = 1234.0          |       20:34
-y = 3.14159265359   |       00:03
+    10.0  42.0
+    x = 1234.0          |       20:34
+    y = 3.14159265359   |       00:03
 
-date # Assume epoch time
+    date # Assume epoch time
 
-10.0  42.0
-x = 1234.0          | 12/31/1969+16:20:34 (Wed)
-y = 3.14159265359   | 12/31/1969+16:00:03 (Wed)
+    10.0  42.0
+    x = 1234.0          | 12/31/1969+16:20:34 (Wed)
+    y = 3.14159265359   | 12/31/1969+16:00:03 (Wed)
 
-time # Guess if this is a duration or epoch time
+    time # Guess if this is a duration or epoch time
 
-10.0  42.0
-x = 1234.0          |       20:34
-y = 3.14159265359   |       00:03
+    10.0  42.0
+    x = 1234.0          |       20:34
+    y = 3.14159265359   |       00:03
 
-$ # Money display
+    $ # Money display
 
-10.0  42.0
-x = 1234.0          |  $1234.00
-y = 3.14159265359   |  $3.14
+    10.0  42.0
+    x = 1234.0          |  $1234.00
+    y = 3.14159265359   |  $3.14
 
-cent # Cent-wise money
+    cent # Cent-wise money
 
-10.0  42.0
-x = 1234.0          |  $12.34
-y = 3.14159265359   |  $0.03
+    10.0  42.0
+    x = 1234.0          |  $12.34
+    y = 3.14159265359   |  $0.03
 
 Note that only x and y are converted by default.  Use the .. command to see the whole stack converted:
 
-..
+    ..
 
-s4 = 10.0            |  $0.10
-s3 = 42.0            |  $0.42
-s2 = 1234.0          |  $12.34
-s1 = 3.14159265359   |  $0.03
+    s4 = 10.0            |  $0.10
+    s3 = 42.0            |  $0.42
+    s2 = 1234.0          |  $12.34
+    s1 = 3.14159265359   |  $0.03
 
 To turn off special display modes, use the normal command:
 
- normal
+    normal
 
-10.0  42.0
-x = 1234.0         
-y = 3.14159265359
+    10.0  42.0
+    x = 1234.0         
+    y = 3.14159265359
 
-Automatic mode changes
-----------------------
+### Automatic mode changes
 
 rpncalc will automatically enable certain display modes based on your input patterns under
 these conditions:
 
-- If you enter a hexidecimal number or use a logical operator (e.g. 0x1234), 
-  hex mode is auto-enabled
-- If you enter a duration (e.g. 2:47:56), duration mode is auto-enabled
-- If you enter a time or date (e.g. 01/01/2010), time mode is auto-enabled
-- If you do any conversions, fixed mode is auto-enabled
+   - If you enter a hexidecimal number or use a logical operator (e.g. 0x1234), 
+     hex mode is auto-enabled
+   - If you enter a duration (e.g. 2:47:56), duration mode is auto-enabled
+   - If you enter a time or date (e.g. 01/01/2010), time mode is auto-enabled
+   - If you do any conversions, fixed mode is auto-enabled
 
 To disable auto-enabling of modes, use the 'manual' command.  Use the 'auto'
 command to re-enable display mode auto-enabling.
 
-Batch and Interactive Modes
----------------------------
+### Batch and Interactive Modes
 
 Batch mode will only print out the formatted result of the bottom of the stack.
 Interactive mode prints a more compete stack view.  Batch is default when
 running rpncalc from the command line (e.g. rpncalc '4 5 +'), while
 interactive is the interactive default.
 
-Example:
+### Example
 
- batch 4 5 +
-   9.0            
- interactive 5 6 +
-  x = 9.0            
-  y = 11.0
+    batch 4 5 +
+      9.0            
+    interactive 5 6 +
+     x = 9.0            
+     y = 11.0
 """
 
 DOCS['Expression Debugging'] = """
@@ -277,53 +292,53 @@ printed until the last element on the line is reached.  When 'debug' is
 activated, the stack is printed after each operator.  This can be useful when
 defining a complex macro or investigating a suspicious calculation result.
 
-Example:
+### Example
 
-  |> m:dist d * s d * + sqrt
-  Defined macro: dist
-  |> 3 4 @dist
-    y = 5.0            
-  |> X debug 3 4 @dist
-    Stack Cut To Clipboard
-    Exec: debug
+    |> m:dist d * s d * + sqrt
+    Defined macro: dist
+    |> 3 4 @dist
+      y = 5.0            
+    |> X debug 3 4 @dist
+      Stack Cut To Clipboard
+      Exec: debug
 
-    Exec: 3
-    y = 3.0            
-    
-    Exec: 4
-    x = 3.0            
-    y = 4.0            
-    
-    Exec: d
-    3.0
-    x = 4.0            
-    y = 4.0            
-    
-    Exec: *
-    x = 3.0            
-    y = 16.0           
-    
-    Exec: s
-    x = 16.0           
-    y = 3.0            
-    
-    Exec: d
-    16.0
-    x = 3.0            
-    y = 3.0            
-    
-    Exec: *
-    x = 16.0           
-    y = 9.0            
-    
-    Exec: +
-    y = 25.0           
-    
-    Exec: sqrt
-    
-    Exec: @dist
-    
-    y = 5.0     
+      Exec: 3
+      y = 3.0            
+
+      Exec: 4
+      x = 3.0            
+      y = 4.0            
+
+      Exec: d
+      3.0
+      x = 4.0            
+      y = 4.0            
+
+      Exec: *
+      x = 3.0            
+      y = 16.0           
+
+      Exec: s
+      x = 16.0           
+      y = 3.0            
+
+      Exec: d
+      16.0
+      x = 3.0            
+      y = 3.0            
+
+      Exec: *
+      x = 16.0           
+      y = 9.0            
+
+      Exec: +
+      y = 25.0           
+
+      Exec: sqrt
+
+      Exec: @dist
+
+      y = 5.0     
 """
 
 DOCS['Exiting'] = """
@@ -336,10 +351,10 @@ such as C and assembly.  Operators use the same syntax as you would see in the C
 language.  By default, Hex mode is enabled automatically after the first hex
 value is pushed to the stack.
 
-Example:
+### Example
 
-  0x1234 2 >>          # Right-shift
-  1 5 << 0xFFFFFFFF ^  # create a bit mask for bit 5
+    0x1234 2 >>          # Right-shift
+    1 5 << 0xFFFFFFFF ^  # create a bit mask for bit 5
 """
 
 DOCS['Macros and Conditionals'] = """
@@ -352,26 +367,26 @@ variables are global though!
 For an example, let's first define a macro that can produce the next fibonacci number
 in a series, assuming that the pattern is already seeded with 0, 1 on the stack:
 
-  m:fib_next \\
-    d 2 pc v +  # z = x+y
+    m:fib_next \\
+      d 2 pc v +  # z = x+y
 
 Now to complete the concept by defining fibonacci to set up the stack initially
-and fib_test and fib_iter helper macros to push the process along
+and `fib_test` and `fib_iter` helper macros to push the process along
 
-m:fibonacci   \\
-    2 - x:i   \\ # Subtract 2 from arg and push 
-    0 1       \\ # Push the first 2 numbers in the series
-    @fib_test   # kick off the iterator
+    m:fibonacci   \\
+        2 - x:i   \\ # Subtract 2 from arg and push 
+        0 1       \\ # Push the first 2 numbers in the series
+        @fib_test   # kick off the iterator
 
-m:fib_test \\
-    v:i 0 > ?fib_iter  # If iterator is not expired then make another digit
+    m:fib_test \\
+        v:i 0 > ?fib_iter  # If iterator is not expired then make another digit
 
-m:fib_iter      \\
-    @fib_next   \\ # Make the digit
-    v:i 1 - x:i \\ # Decrement the counter
-    @fib_test     # See if there is more to do
+    m:fib_iter      \\
+        @fib_next   \\ # Make the digit
+        v:i 1 - x:i \\ # Decrement the counter
+        @fib_test     # See if there is more to do
 
-15 @fibonacci # Generate the first 15 numbers
+    15 @fibonacci # Generate the first 15 numbers
 
 As you can see, programming with this calculator is possible but complex
 implementations are beyond the current goals.
@@ -416,17 +431,17 @@ Statistics funtions are listed here.  Statistics function treat the entire stack
 as a list of relevant data points.  To help manage this, the "Clipboard"
 function 'C', 'X' and 'V' can be useful for storeing and retrieving the stack.
 
-Example:
+### Example
 
-  batch
-  5 0.67 36 37 C
-    37.0           
-  sum
-    78.67          
-  V mean
-    19.6675        
-  V median
-    36.0           
+    batch
+    5 0.67 36 37 C
+      37.0           
+    sum
+      78.67          
+    V mean
+      19.6675        
+    V median
+      36.0           
 """
 
 DOCS['Trigonometry'] = """
@@ -438,24 +453,24 @@ DOCS['Type Conversion'] = """
 rpncalc has a fairly robust conversion mode that can handle conversion between
 different ratios of products or inverses.  Some good examples of this are:
 
-Examples:
+### Examples
 
-  10 mph>min/mile
-  5 gallons>in*in*in
-  90 kwh>kj
+    10 mph>min/mile
+    5 gallons>in*in*in
+    90 kwh>kj
 
 The basic pattern is:
 
-  old>new
+    old>new
 
 Where wither old or new can be a single unit type or a product of types.  The
 conversion engine is smart enough to invert old, if needed for a unit match.
 The engine is also smart enough to detect unit mismatch, for example:
 
-  1 acre>feet  (Error)
-  1 acre>feet*feet (Ok)
+    1 acre>feet  (Error)
+    1 acre>feet*feet (Ok)
 
-use the 'l:c' command to list all known conversion types.
+use the `l:c` command to list all known conversion types.
 """
 
 DOCS['Undo/Redo'] = """
