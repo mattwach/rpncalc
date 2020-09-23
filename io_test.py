@@ -54,12 +54,6 @@ DATA = """
   I D 5 2 ** v:pi *
   O y = 78.5398163397 |>
 
-  I D -12.34e6
-  O y = -12340000.0 |>
-
-  I D 12.34e-6
-  O y = 1.234e-05 |>
-
 # --- Operators ---
 
   I D 4 5 +
@@ -90,6 +84,44 @@ DATA = """
 
   I D 0x08 4 <<
   O y = 128 | 0x80 |hex|mix|>
+
+# --- Scientific ---
+
+  I normal floats D -12.34e6
+  O y = -12340000.0 |>
+
+  I D 12.34e-6
+  O y = 1.234e-05 |>
+
+  I D 100 log10
+  O y = 2.0 |>
+
+  I D v:e 5 ** log
+  O y = 5.0 |>
+
+  I D 5 sq
+  O y = 25.0 |>
+
+  I D 25 sqrt
+  O y = 5.0 |>
+
+  I D 10 3 %
+  O y = 1.0 |>
+
+  I D 5 !
+  O y = 120.0 |>
+
+  I D 10 inv
+  O y = 0.1 |>
+
+  I D 1234 neg
+  O y = -1234.0 |>
+
+  I D -1234 abs
+  O y = 1234.0 |>
+
+  I D 5 3 **
+  O y = 125.0 |>
 
 # --- Integers ---
 
