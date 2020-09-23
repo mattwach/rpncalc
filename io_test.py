@@ -60,6 +60,12 @@ DATA = """
   I D 12.34e-6
   O y = 1.234e-05 |>
 
+  I D -1+5i
+  O y = -1.0+5.0i |>
+
+  I D 3.7-2.1j
+  O y = 3.7-2.1j |>
+
 # Trig functions, in radians
 
   I D 1 sin
@@ -72,6 +78,18 @@ DATA = """
 
   I D 25.4 cm>in
   O y = 10.0 |>
+
+  I D 1 mi*mi>acres
+  O y = 640.00000038 |>
+
+  I D 1 pint>tsp
+  O y = 96.000000073 |>
+
+  I D 10 n*m>in*lbs
+  O y = 88.5043147656 |>
+
+  I D 4 ft>yards 25 25 * * yard*yard*yard>gallon
+  O y = 168311.688488 |>
 
 # --- Time Tests ---
 
@@ -98,6 +116,11 @@ DATA = """
 
   I D -0x1234
   O y = -4660 | -0x1234 |hex|mix|>
+
+# --- Binary ---
+
+  I normal D 0b1001
+  O y = 9 | 0b1001 |bin|mix|>
 
 # --- Stack Management ---
 

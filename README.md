@@ -151,8 +151,6 @@ the number at the top of the stack between integer and floating point.
     01/14, 2/12           Date (this year)
     01/14/2010, 2/12/1990  Date
     07/30/2006+16:00:00   Date
-    imagi                 Display Complex numbers with i
-    imagj                 Display Complex numbers with j
     now                   Current time and date
     today                 Current date
     mixed                 Allow integers and floats

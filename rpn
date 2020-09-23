@@ -388,14 +388,6 @@ class RPNCalc(object):
     self.debug_mode = False
     return False
 
-  def ImagI(self, _):
-    self.imagj = False
-    return False
-
-  def ImagJ(self, _):
-    self.imagj = True
-    return False
-
   def MixedMode(self, _):
     self.mixed_mode = True
     return False
@@ -417,6 +409,7 @@ class RPNCalc(object):
     return True
 
   def PushComplex(self, arg):
+    self.imagj = arg[-1] == 'j'
     arg = arg[:-1]  # remove the i or j
     if not arg or arg[-1] == '-' or arg[-1] == '+':
       arg += '1'  # no number was provided for i, add a one to simplify parsing
@@ -1215,8 +1208,6 @@ MATCH_TABLE = [
           r'^[01]?[0-9]/[0-3]?[0-9]/[0-9]+\+[01]?[0-9]:'
           '[0-5][0-9]:[0-5][0-9]$')),
      RPNCalc.PushDateTime, NM, 'Date'),
-    ('imagi', RPNCalc.ImagI, NM, 'Display Complex numbers with i'),
-    ('imagj', RPNCalc.ImagJ, NM, 'Display Complex numbers with j'),
     ('now', RPNCalc.PushCurrentTime, NM, 'Current time and date'),
     ('today', RPNCalc.PushToday, NM, 'Current date'),
     ('mixed', RPNCalc.MixedMode, NM, 'Allow integers and floats'),
