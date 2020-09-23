@@ -437,6 +437,14 @@ DATA = """
 
   I ..
   O s3 = 1.0j | 1.00j s2 = 5.0+1.0j | 5.00+1.00j s1 = -1.123-2.234j | -1.12-2.23j |fixed2|>
+
+# --- Hexidecimal Display and Entry Mode ---
+
+  I D hex 10.1 -10.5 0xabf -0xABF ..
+  O s4 = 10.1 | 0x0A s3 = -10.5 | -0x0A s2 = 2751 | 0x0ABF s1 = -2751 | -0x0ABF |hex|mix|>
+
+#  I D i -2i -10.1+11.2i 0xab-0xCDi 0xabi -0xcdi..
+#  O s6 = 1.0i | 0x01i s6 = -2.0i | -0x02i | s4 = -10.1+11.2i | -0x0A+0x0Di | s3 = 171.0-205.0i | 0xAB-0xCDi |hex|mix>
 """
 
 class Error(Exception):
