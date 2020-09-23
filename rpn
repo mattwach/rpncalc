@@ -213,7 +213,7 @@ class RPNCalc(object):
     if atom:
       sys.stderr.write('While parsing %s:\n  ' % atom)
     sys.stderr.write(msg)
-    sys.stderr.write('\n')
+    sys.stderr.write('\n!!\n')
     sys.stderr.flush()
 
   def DumpState(self, _=None):
