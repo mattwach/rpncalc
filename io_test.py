@@ -123,6 +123,49 @@ DATA = """
   I D 5 3 **
   O y = 125.0 |>
 
+# --- Trig functions, in radians ---
+
+  I D normal v:pi 6 / sin
+  O y = 0.5 |>
+
+  I D v:pi 3 / cos
+  O y = 0.5 |>
+
+  I D v:pi 4 / tan
+  O y = 1.0 |>
+
+  I D 1 asin v:pi 2 / -
+  O y = 0.0 |>
+
+  I D 0 acos v:pi 2 / -
+  O y = 0.0 |>
+
+  I D 1 atan v:pi 4 / -
+  O y = 0.0 |>
+
+# --- Trig functions, in degrees ---
+
+  I D deg 30 sin
+  O y = 0.5 |deg|>
+
+  I D 60 cos
+  O y = 0.5 |deg|>
+
+  I D 45 tan
+  O y = 1.0 |deg|>
+
+  I D 1 asin
+  O y = 90.0 |deg|>
+
+  I D 0 acos
+  O y = 90.0 |deg|>
+
+  I D 1 atan 
+  O y = 45.0 |deg|>
+
+  I rad
+  A
+
 # --- Integers ---
 
   I D normal mixed 1 2.0
@@ -150,11 +193,6 @@ DATA = """
 
   I D 3.7-2.1j
   O y = 3.7-2.1j |>
-
-# --- Trig functions, in radians ---
-
-  I D normal 1 sin
-  O y = 0.841470984808 |>
 
 # --- Conversions ---
 
