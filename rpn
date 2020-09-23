@@ -127,17 +127,19 @@ class RPNCalc(object):
       return self.ExecCommands(command_list)
 
   def ExecCommands(self, command_list):
-    stack_changed = False
+    autodump_stack = False
     def maybe_reraise(e):
       if self.reraise:
         raise e
 
     try:
       for atom in command_list:
-        if self.debug_mode and stack_changed:
+        if self.debug_mode and autodump_stack:
           self.DumpState()
         if self.Parse(atom):
-          stack_changed = True
+          autodump_stack = True
+        if atom == '.' or atom == '..':
+          autodump_stack = False
         self._DebugMessage('Exec: %s' % atom)
       if self.debug_mode:
         sys.stdout.write('\n')
@@ -175,7 +177,7 @@ class RPNCalc(object):
       self.DumpError('Incompatible Conversion Types: %s' % e, atom)
       maybe_reraise(e)
 
-    return stack_changed
+    return autodump_stack
 
   def Parse(self, arg):
     stack_changed = False
@@ -1058,7 +1060,23 @@ class RPNCalc(object):
 
   @staticmethod
   def _FixedMode(this, value):
-    format_str = '%%.%df' % this.fixed_places
+    if isinstance(value, complex):
+      letter = 'j' if this.imagj else 'i'
+      if value.real == 0:
+        format_str = '%.{fp}f{letter}'.format(
+            fp=this.fixed_places,
+            letter=letter
+        )
+        return format_str % value.imag
+
+      format_str = '%.{fp}f{sign}%.{fp}f{letter}'.format(
+          fp=this.fixed_places,
+          sign='+' if value.imag >= 0 else '',
+          letter=letter
+      )
+      return format_str % (value.real, value.imag)
+
+    format_str = '%.{fp}f'.format(fp=this.fixed_places)
     return format_str % value
 
   @staticmethod

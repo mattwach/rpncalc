@@ -407,6 +407,36 @@ DATA = """
 
   I V median
   O y = 36.0 |>
+
+# --- Fixed Display Mode ---
+
+  I D 3 fixed 10 0.567 -1.6789
+  O 10.0 x = 0.567 | 0.567 y = -1.6789 | -1.679 |fixed3|>
+
+  I 2 fixed
+  O 10.0 x = 0.567 | 0.57 y = -1.6789 | -1.68 |fixed2|>
+
+  I ..
+  O s3 = 10.0 | 10.00 s2 = 0.567 | 0.57 s1 = -1.6789 | -1.68 |fixed2|>
+
+  I D 0 fixed 5.1
+  O y = 5.1 | 5 |fixed0|>
+
+  I D -1 fixed
+  E While parsing fixed: Fixed Mode: value out of range: -1 !!
+  O |fixed0|>
+
+  I D 2 fixed i 5+i -1.123-2.234i
+  O 1.0i x = 5.0+1.0i | 5.00+1.00i y = -1.123-2.234i | -1.12-2.23i |fixed2|>
+
+  I ..
+  O s3 = 1.0i | 1.00i s2 = 5.0+1.0i | 5.00+1.00i s1 = -1.123-2.234i | -1.12-2.23i |fixed2|>
+
+  I D 2 fixed j 5+j -1.123-2.234j
+  O 1.0j x = 5.0+1.0j | 5.00+1.00j y = -1.123-2.234j | -1.12-2.23j |fixed2|>
+
+  I ..
+  O s3 = 1.0j | 1.00j s2 = 5.0+1.0j | 5.00+1.00j s1 = -1.123-2.234j | -1.12-2.23j |fixed2|>
 """
 
 class Error(Exception):
@@ -442,8 +472,8 @@ def get_output(fout, max_chars=8192):
 
 def compare_output(line_number, expected, actual):
   if expected != actual:
-    raise OutputMismatch('Line %d.  Expected: %s.  Got %s' % (
-        line_number, expected, actual))
+    raise OutputMismatch('Line %d:\n  Expected: %s\n       Got: %s' % (
+        line_number, ' '.join(expected), ' '.join(actual)))
 
 
 def parse_line(line_number, line, p):
