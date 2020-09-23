@@ -184,7 +184,6 @@ value is pushed to the stack.
 
     &                     x & y (Logical And)
     |                     x | y (Logical Or)
-    ~                     ~y (Logical XOR)
     ^                     x ^ y (Logical XOR)
     >>                    x >> y (Logical Shift Right)
     <<                    x << y (Logical Shift Left)
