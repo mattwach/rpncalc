@@ -60,15 +60,37 @@ DATA = """
   I D 12.34e-6
   O y = 1.234e-05 |>
 
-  I D -1+5i
+# --- Integers ---
+
+  I D mixed 1 2.0
+  O x = 1 y = 2.0 |mix|>
+
+  I +
+  O y = 3.0 |mix|>
+
+  I D 5 2 /
+  O y = 2 |mix|>
+
+  I D mixed 1 2.0 floats
+  O x = 1 y = 2.0 |>
+
+  I D 5.0 t
+  O y = 5 |mix|>
+
+  I t
+  O y = 5.0 |mix|>
+
+# --- Complex Numbers ---
+
+  I floats D -1+5i
   O y = -1.0+5.0i |>
 
   I D 3.7-2.1j
   O y = 3.7-2.1j |>
 
-# Trig functions, in radians
+# --- Trig functions, in radians ---
 
-  I D 1 sin
+  I D normal 1 sin
   O y = 0.841470984808 |>
 
 # --- Conversions ---
@@ -96,10 +118,37 @@ DATA = """
   I D 12/25 12/24 -
   O y = 86400.0 | 1d |time|>
 
+  I D 1/14/2010
+  O y = 1263456000.0 | 01/14/2010 (Thu) |time|>
+
+  I D 07/30/2006+16:00:00
+  O y = 1154300400.0  | 07/30/2006+16:00:00 (Sun) |time|>
+
+  I D now
+  A
+
+  I D today
+  A
+
 # -- Duration Tests ---
 
   I normal D 20:00 5000 meters>miles /
   O y = 386.24256 | 06:26 |dur|>
+
+  I D 4d
+  O y = 345600.0 | 4d |dur|>
+
+  I D -4d
+  O y = -345600.0 | -4d |dur|>
+
+  I D 1d14:23:12
+  O y = 138192.0 | 1d14:23:12 |dur|>
+
+  I D 534:12:00
+  O y = 1923120.0 | 22d06:12:00 |dur|>
+
+  I D 536:45
+  O y = 32205.0 | 08:56:45 |dur|>
 
 # --- Money ---
 
@@ -255,6 +304,8 @@ def parse_line(line_number, line, p):
     compare_output(line_number, tokens[1:], get_output(p.stdout))
   elif cmd == 'E':
     compare_output(line_number, tokens[1:], get_output(p.stderr))
+  elif cmd == 'A':
+    get_output(p.stdout)
   else:
     raise UnknownCommandError('Unknown Command: %s' % line)
 
