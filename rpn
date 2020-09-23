@@ -611,12 +611,6 @@ class RPNCalc(object):
     self.stack.append(int(x) | int(y))
     return True
 
-  def LogicalNot(self, _):
-    self.HexMode(None)
-    y = self.stack.pop()
-    self.stack.append(int(~y))
-    return True
-
   def LogicalXOR(self, _):
     self.HexMode(None)
     y = self.stack.pop()
@@ -1221,7 +1215,6 @@ MATCH_TABLE = [
 
     ('&', RPNCalc.LogicalAnd, LO, 'x & y (Logical And)'),
     ('|', RPNCalc.LogicalOr, LO, 'x | y (Logical Or)'),
-    ('~', RPNCalc.LogicalNot, LO, '~y (Logical XOR)'),
     ('^', RPNCalc.LogicalXOR, LO, 'x ^ y (Logical XOR)'),
     ('>>', RPNCalc.LogicalShiftRight, LO, 'x >> y (Logical Shift Right)'),
     ('<<', RPNCalc.LogicalShiftLeft, LO, 'x << y (Logical Shift Left)'),

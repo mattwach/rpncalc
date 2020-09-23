@@ -74,9 +74,26 @@ DATA = """
   I D 4 5 /
   O y = 0.8 |>
 
+# --- Logic ---
+
+  I D 0xF0 0x7F &
+  O y = 112 | 0x70 |hex|mix|>
+
+  I D 0x80 0x08 |
+  O y = 136 | 0x88 |hex|mix|>
+
+  I D 0x80 0xFF ^
+  O y = 127 | 0x7F |hex|mix|>
+
+  I D 0x80 4 >>
+  O y = 8 | 0x08 |hex|mix|>
+
+  I D 0x08 4 <<
+  O y = 128 | 0x80 |hex|mix|>
+
 # --- Integers ---
 
-  I D mixed 1 2.0
+  I D normal mixed 1 2.0
   O x = 1 y = 2.0 |mix|>
 
   I +
