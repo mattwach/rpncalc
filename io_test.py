@@ -261,9 +261,6 @@ DATA = """
 
 # --- Time Tests ---
 
-  I D 12/25 12/24 -
-  O y = 86400.0 | 1d |time|>
-
   I D 1/14/2010
   O y = 1263456000.0 | 01/14/2010 (Thu) |time|>
 
@@ -278,10 +275,7 @@ DATA = """
 
 # -- Duration Tests ---
 
-  I normal D 20:00 5000 meters>miles /
-  O y = 386.24256 | 06:26 |dur|>
-
-  I D 4d
+  I D normal 4d
   O y = 345600.0 | 4d |dur|>
 
   I D -4d
@@ -295,27 +289,6 @@ DATA = """
 
   I D 536:45
   O y = 32205.0 | 08:56:45 |dur|>
-
-# --- Money Auto Enter ---
-
-  I normal D $ 1.24 5.34 6.78 sum 1.09 *
-  O y = 14.5624 | $14.56 |$|>
-
-  I D cent -4234 -1215 -500 -2738 50000 sum
-  O y = 41313.0 | $413.13 |cent|>
-
-# --- Hexadecimal Auto Enter ---
-
-  I normal D 0x80
-  O y = 128 | 0x80 |hex|mix|>
-
-  I D -0x1234
-  O y = -4660 | -0x1234 |hex|mix|>
-
-# --- Binary Auto Enter ---
-
-  I normal D 0b1001
-  O y = 9 | 0b1001 |bin|mix|>
 
 # --- Stack Management ---
 
@@ -465,6 +438,36 @@ DATA = """
   I D time 1234 1600964826.4 10.5+4.2i -1234 ..
   A
 
+# --- Time Auto Enter ---
+
+  I normal D 12/25 12/24 -
+  O y = 86400.0 | 1d |time|>
+
+# --- Duration Auto Enter ---
+
+  I normal D 20:00 5000 meters>miles /
+  O y = 386.24256 | 06:26 |dur|>
+
+# --- Money Auto Enter ---
+
+  I normal D $ 1.24 5.34 6.78 sum 1.09 *
+  O y = 14.5624 | $14.56 |$|>
+
+  I D cent -4234 -1215 -500 -2738 50000 sum
+  O y = 41313.0 | $413.13 |cent|>
+
+# --- Hexadecimal Auto Enter ---
+
+  I normal D 0x80
+  O y = 128 | 0x80 |hex|mix|>
+
+  I D -0x1234
+  O y = -4660 | -0x1234 |hex|mix|>
+
+# --- Binary Auto Enter ---
+
+  I normal D 0b1001
+  O y = 9 | 0b1001 |bin|mix|>
 """
 # eot (for searching)
 
