@@ -36,7 +36,7 @@ Area of a circle of radius 5
     |> 5 2 ** v:pi *
     y = 78.5398163397
 
-## Complex Number Support
+Complex Numbers
 
     |> 5+i
     y = 5.0+1.0i       
