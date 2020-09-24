@@ -233,11 +233,53 @@ DATA = """
 
 # --- Complex Numbers ---
 
-  I floats D -1+5i
-  O y = -1.0+5.0i |>
+  I floats normal D i
+  O y = 1.0i |>
 
-  I D 3.7-2.1j
-  O y = 3.7-2.1j |>
+  I D -i
+  O y = -1.0i |>
+
+  I D 5+4i
+  O y = 5.0+4.0i |>
+
+  I -6-2j
+  O x = 5.0+4.0j y = -6.0-2.0j |>
+
+  I D 1+i
+  O y = 1.0+1.0i |>
+
+  I D 6 i 7 * -
+  O y = 6.0-7.0i |>
+
+  I D -1 sqrt
+  O y = 1.0i |>
+
+  I D 5+5i 4-5i +
+  O y = 9.0 |>
+
+  I D 5<3.14
+  O y = -4.99999365864+0.00796326458243i | 5.0<3.14 |polar|>
+
+  I deg
+  O y = -4.99999365864+0.00796326458243i | 5.0<179.908747671 |polar|deg|>
+
+  I D -6<90
+  O y = -3.67394039744e-16-6.0i | 6.0<-90.0 |polar|deg|>
+
+  I rad
+  O y = -3.67394039744e-16-6.0i | 6.0<-1.57079632679 |polar|>
+
+  I D v:pi 2 / 5<
+  O y = 3.06161699787e-16+5.0i | 5.0<1.57079632679 |polar|>
+
+  I deg
+  O y = 3.06161699787e-16+5.0i | 5.0<90.0 |polar|deg|>
+
+  I D 5 45 1< *
+  O y = 3.53553390593+3.53553390593i | 5.0<45.0 |polar|deg|>
+
+  I D rad 6 1 1< *
+  O y = 3.24181383521+5.04882590885i | 6.0<1.0 |polar|>
 
 # --- Time Tests ---
 
@@ -392,6 +434,14 @@ DATA = """
   I ..
   O s3 = 1.0j | 1.00j s2 = 5.0+1.0j | 5.00+1.00j s1 = -1.123-2.234j | -1.12-2.23j |fixed2|>
 
+# --- Fixed Polar Display Mode ---
+
+  I D 1+i deg 3 fixedpolar
+  O y = 1.0+1.0i | 1.414<45.000 |fixedpolar3|deg|>
+
+  I rad
+  O y = 1.0+1.0i | 1.414<0.785 |fixedpolar3|>
+
 # --- Hexidecimal Display Mode ---
 
   I D hex 10.1 -10.5 0xabf -0xABF ..
@@ -418,9 +468,14 @@ DATA = """
   I D time 1234 1600964826.4 10.5+4.2i -1234 ..
   A
 
+# --- Polar Display Mode ---
+
+  I D 1+i deg polar
+  O y = 1.0+1.0i | 1.41421356237<45.0 |polar|deg|>
+
 # --- Money display Mode ---
 
-  I D $ 12.345 -0.11 10.5+4.2i ..
+  I rad D $ 12.345 -0.11 10.5+4.2i ..
   O s3 = 12.345 | $12.35 s2 = -0.11 | -$0.11 s1 = 10.5+4.2i | $10.50 |$|>
 
 # --- Cent display Mode ---
