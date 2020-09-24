@@ -239,26 +239,6 @@ DATA = """
   I D 3.7-2.1j
   O y = 3.7-2.1j |>
 
-# --- Conversions ---
-
-  I D 10 in>cm
-  O y = 25.4 |>
-
-  I D 25.4 cm>in
-  O y = 10.0 |>
-
-  I D 1 mi*mi>acres
-  O y = 640.00000038 |>
-
-  I D 1 pint>tsp
-  O y = 96.000000073 |>
-
-  I D 10 n*m>in*lbs
-  O y = 88.5043147656 |>
-
-  I D 4 ft>yards 25 25 * * yard*yard*yard>gallon
-  O y = 168311.688488 |>
-
 # --- Time Tests ---
 
   I D 1/14/2010
@@ -502,6 +482,29 @@ DATA = """
   
   I nodebug
   O |>
+
+# --- Type Conversion ---
+
+  I D 10 in>cm
+  O y = 25.4 |>
+
+  I D 25.4 cm>in
+  O y = 10.0 |>
+
+  I D 1 mi*mi>acres
+  O y = 640.00000038 |>
+
+  I D 1 pint>tsp
+  O y = 96.000000073 |>
+
+  I D 10 n*m>in*lbs
+  O y = 88.5043147656 |>
+
+  I D 4 ft>yards 25 25 * * yard*yard*yard>gallon
+  O y = 168311.688488 |>
+
+  I l:c
+  A
 """
 # eot (for searching)
 
