@@ -493,7 +493,15 @@ DATA = """
   O 9.0 |batch|>
 
   I interactive .
-  I y = 9.0 |>
+  O y = 9.0 |>
+
+# --- Expression Debugging ---
+
+  I D debug 4 5 +
+  O Exec: debug Exec: 4 y = 4.0 Exec: 5 x = 4.0 y = 5.0 Exec: + y = 9.0 |debug|>
+  
+  I nodebug
+  O |>
 """
 # eot (for searching)
 
@@ -523,12 +531,10 @@ def get_output(fout, max_chars=8192):
     fout.flush()
     line_data.append(fout.read(1))
     max_chars -= 1
-    if len(line_data) < 3:
+    if len(line_data) < 2:
       continue
-    if ((line_data[-1] == ' ' and line_data[-2] == '>'
-         and line_data[-3] == '|') or
-        (line_data[-1] == '\n' and line_data[-2] == '!'
-         and line_data[-3] == '!')):
+    if ((line_data[-1] == '>' and line_data[-2] == '|') or
+        (line_data[-1] == '!' and line_data[-2] == '!')):
       line = ''.join(line_data)
       data = line.strip().split()
       logging.debug('data -> %s', data)
@@ -559,12 +565,15 @@ def has_extra_output(name, f, line_number, line):
       break
     data.append(f.read(1))
 
-  raise ExtraOutputError(
-      '%s contains extra output: "%s" on line %d: %s' % (
-          name,
-          ''.join(data),
-          line_number,
-          line))
+  data = ''.join(data).strip()
+
+  if data:
+    raise ExtraOutputError(
+        '%s contains extra output: "%s" on line %d: %s' % (
+            name,
+            data,
+            line_number,
+            line))
 
 
 def parse_line(line_number, line, p):
