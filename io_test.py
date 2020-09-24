@@ -2,6 +2,7 @@
 """Runs IO tests on RPN."""
 
 import logging
+import select
 import subprocess
 import sys
 
@@ -456,7 +457,16 @@ DATA = """
   I D floats dur 1234 12345678.9 3.14 10.5+4.2i ..
   O s4 = 1234.0 | 20:34 s3 = 12345678.9 | 142d21:21:18 s2 = 3.14 | 00:03 s1 = 10.5+4.2i | 00:10 |dur|> 
 
+# --- Date and Time Display Modes - Due to time zones, just make sure that it doesn't crash ---
+
+  I D date 1234 1600964826.4 10.5+4.2i -1234 ..
+  A
+
+  I D time 1234 1600964826.4 10.5+4.2i -1234 ..
+  A
+
 """
+# eot (for searching)
 
 class Error(Exception):
   pass
@@ -474,14 +484,22 @@ class UnknownCommandError(Error):
   pass
 
 
+class ExtraOutputError(Error):
+  pass
+
+
 def get_output(fout, max_chars=8192):
   line_data = []
   while max_chars > 0:
     fout.flush()
     line_data.append(fout.read(1))
     max_chars -= 1
-    if ((line_data[-1] == '>' and line_data[-2] == '|') or
-        (line_data[-1] == '!' and line_data[-2] == '!')):
+    if len(line_data) < 3:
+      continue
+    if ((line_data[-1] == ' ' and line_data[-2] == '>'
+         and line_data[-3] == '|') or
+        (line_data[-1] == '\n' and line_data[-2] == '!'
+         and line_data[-3] == '!')):
       line = ''.join(line_data)
       data = line.strip().split()
       logging.debug('data -> %s', data)
@@ -493,6 +511,31 @@ def compare_output(line_number, expected, actual):
   if expected != actual:
     raise OutputMismatch('Line %d:\n  Expected: %s\n       Got: %s' % (
         line_number, ' '.join(expected), ' '.join(actual)))
+
+
+def check_for_extra_output(p, line_number, line):
+  # Check stdout, stderr for unexpected stray output
+  read_list, _, _ = select.select((p.stdout, p.stderr), (), (), 0)
+  if p.stdout in read_list:
+    has_extra_output('stdout', p.stdout, line_number, line)
+  if p.stderr in read_list:
+    has_extra_output('stderr', p.stderr, line_number, line)
+
+
+def has_extra_output(name, f, line_number, line):
+  data = []
+  while True:
+    read_list, _, _ = select.select((f,), (), (), 0)
+    if not read_list:
+      break
+    data.append(f.read(1))
+
+  raise ExtraOutputError(
+      '%s contains extra output: "%s" on line %d: %s' % (
+          name,
+          ''.join(data),
+          line_number,
+          line))
 
 
 def parse_line(line_number, line, p):
@@ -508,6 +551,7 @@ def parse_line(line_number, line, p):
   tokens = line.split()
   cmd = tokens[0]
   if cmd == 'I':
+    check_for_extra_output(p, line_number, line)
     p.stdin.write(' '.join(tokens[1:]))
     p.stdin.write('\n')
     return 0
@@ -539,6 +583,7 @@ def main():
     except OutputMismatch as e:
       sys.stderr.write('%s\n' % e)
       tests_failed += 1
+  check_for_extra_output(p, len(DATA), "EOF")
 
   # Wrap up
   sys.stdout.write('%s: %d / %d tests passed\n' % (
