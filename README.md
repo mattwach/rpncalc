@@ -36,6 +36,25 @@ Area of a circle of radius 5
     |> 5 2 ** v:pi *
     y = 78.5398163397
 
+## Complex Number Support
+
+    |> 5+i
+    y = 5.0+1.0i       
+
+    |> 4-2j +
+    y = 9.0-1.0j       
+
+    |> i + 
+    y = 9.0            
+
+    |> deg
+
+    |deg|> 2<90 *
+    y = 1.10218211923e-15+18.0i | 18.0<90.0
+
+    |polar|deg|> 0.5<90 *
+    y = -9.0+1.10218211923e-15i | 9.0<180.0
+
 ## Robust Conversion Support
 
     Q: How many acres in a square mile?
