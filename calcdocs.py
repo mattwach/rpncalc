@@ -239,7 +239,8 @@ show the data in a converted format.  Here is the basic catalogue:
     x = 1234.0          |  $12.34
     y = 3.14159265359   |  $0.03
 
-Note that only x and y are converted by default.  Use the .. command to see the whole stack converted:
+Note that only x and y are converted by default.  Use the .. command to see the
+whole stack converted:
 
     ..
 
@@ -255,6 +256,24 @@ To turn off special display modes, use the normal command:
     10.0  42.0
     x = 1234.0         
     y = 3.14159265359
+
+A couple more notes on Display Modes:
+
+   - Display modes are informational only.  The actual data on the stack is
+     the number to the left of the `|` in the output
+   - The format displayed to the right of the `|` can generally be entered as
+     valid input but, because it's often lossy, th number you'll get back is
+     not exactly the same as the data on the stack.  A trivial example:
+
+    |> 1.2345 2 fixed
+    y = 1.2345          | 1.23
+
+    |fixed2|> 1.23
+    x = 1.2345          | 1.23
+    y = 1.23            | 1.23
+
+    |fixed2|> -
+    y = 0.0045          | 0.00
 
 ### Automatic mode changes
 
