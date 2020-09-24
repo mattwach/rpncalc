@@ -351,8 +351,8 @@ function 'C', 'X' and 'V' can be useful for storeing and retrieving the stack.
 
 ## Display Modes
 
-On startup, rpncalc will show results in either floating point or integer format, like
-this:
+On startup, rpncalc will show results in either floating point or integer
+format, like this:
 
     10.0  42.0
     x = 1234.0         
@@ -432,7 +432,7 @@ A couple more notes on Display Modes:
    - Display modes are informational only.  The actual data on the stack is
      the number to the left of the `|` in the output
    - The format displayed to the right of the `|` can generally be entered as
-     valid input but, because it's often lossy, th number you'll get back is
+     valid input but, because it's often lossy, the number you'll get back is
      not exactly the same as the data on the stack.  A trivial example:
 
     |> 1.2345 2 fixed
@@ -447,8 +447,8 @@ A couple more notes on Display Modes:
 
 ### Automatic mode changes
 
-rpncalc will automatically enable certain display modes based on your input patterns under
-these conditions:
+rpncalc will automatically enable certain display modes based on your input
+patterns under these conditions:
 
    - If you enter a hexidecimal number or use a logical operator (e.g. 0x1234), 
      hex mode is auto-enabled
@@ -587,7 +587,8 @@ it.  The stack is used for argument passing and return values for the most part,
 although you can also use the clipboard to hold variables.  Be aware that these
 variables are global though!
 
-For an example, let's first define a macro that can produce the next fibonacci number
+For an example, let's first define a macro that can produce the next fibonacci
+number
 in a series, assuming that the pattern is already seeded with 0, 1 on the stack:
 
     m:fib_next \
