@@ -444,7 +444,7 @@ DATA = """
   O s4 = 10.1 | 0x0A s3 = -10.5 | -0x0A s2 = 2751 | 0x0ABF s1 = -2751 | -0x0ABF |hex|mix|>
 
 #  I D i -2i -10.1+11.2i 0xab-0xCDi 0xabi -0xcdi..
-#  O s6 = 1.0i | 0x01i s6 = -2.0i | -0x02i | s4 = -10.1+11.2i | -0x0A+0x0Di | s3 = 171.0-205.0i | 0xAB-0xCDi |hex|mix>
+#  O s6 = 1.0i | 0x00 s6 = -2.0i | 0x00 | s4 = -10.1+11.2i | -0x0A | s3 = 171.0-205.0i | 0xAB |hex|mix>
 """
 
 class Error(Exception):

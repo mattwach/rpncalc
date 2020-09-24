@@ -1081,6 +1081,9 @@ class RPNCalc(object):
 
   @staticmethod
   def _HexMode(_, value):
+    if isinstance(value, complex):
+      value = value.real
+
     if value >= 0:
       ret = '%X' % value
     else:
@@ -1096,10 +1099,14 @@ class RPNCalc(object):
 
   @staticmethod
   def _BinMode(_, value):
+    if isinstance(value, complex):
+      value = value.real
     return bin(int(value))
 
   @staticmethod
   def _DateMode(_, value):
+    if isinstance(value, complex):
+      value = value.real
 
     ret = ''
 
@@ -1116,12 +1123,16 @@ class RPNCalc(object):
 
   @staticmethod
   def _TimeMode(this, value):
+    if isinstance(value, complex):
+      value = value.real
     if value > 31536000:
       return RPNCalc._DateMode(this, value)
     return RPNCalc._DurationMode(this, value)
 
   @staticmethod
   def _DurationMode(_, value):
+    if isinstance(value, complex):
+      value = value.real
     ret = ''
     sign = ' '
     if value < 0:
@@ -1147,6 +1158,8 @@ class RPNCalc(object):
 
   @staticmethod
   def _MoneyMode(_, value):
+    if isinstance(value, complex):
+      value = value.real
     if value < 0:
       ret = '-$'
       value = -value
@@ -1157,6 +1170,8 @@ class RPNCalc(object):
 
   @staticmethod
   def _CentMode(this, value):
+    if isinstance(value, complex):
+      value = value.real
     return RPNCalc._MoneyMode(this, value / 100.0)
 
 # Match up inputs with regular expressions
