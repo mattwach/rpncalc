@@ -412,6 +412,35 @@ As you can see, programming with this calculator is possible but complex
 implementations are beyond the current goals.
 
 Note that turning on debug mode can be a valuable aid in testing macros.
+
+### Conditionals
+
+Conditionals return 1 or 0.  If `rpncalc` is not in mixed mode, these will
+automatically be converted to floats.  The `?` macro operator works correctly
+whether the argument is a integer or a float.  Here is an example for clarity:
+
+    |> 1 2 > 1 2 <
+      x = 0.0            
+      y = 1.0            
+
+    |> mixed
+
+    |mix|> 1 2 > 1 2 <
+      0.0  1.0
+      x = 0              
+      y = 1              
+
+    |mix|> m:foo 1234
+
+    |mix|> D 1 ?foo
+       y = 1234           
+
+    |mix|> D 0 ?foo
+
+    |mix|> D 1.0 ?foo
+      y = 1234           
+    
+    |mix|> D 0.0 ?foo
 """
 
 DOCS['Misc'] = """

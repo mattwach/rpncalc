@@ -505,6 +505,46 @@ DATA = """
 
   I l:c
   A
+
+# --- Macros ---
+
+  I m:pyth 2 ** s 2 ** + sqrt
+  O |>
+  
+  I D 3 4 @pyth
+  O y = 5.0 |>
+  
+  I D 6 8 1 ?pyth
+  O y = 10.0 |>
+  
+  I D 6 8 0 ?pyth
+  O x = 6.0 y = 8.0 |>
+
+  I l:m
+  O pyth | 2 ** s 2 ** + sqrt |>
+
+# --- Conditionals ---
+
+  I D 1 2 > 2 1 > 2 2 >
+  O 0.0 x = 1.0 y = 0.0 |>
+
+  I D 1 2 < 2 1 < 2 2 <
+  O 1.0 x = 0.0 y = 0.0 |>
+
+  I D 1 2 >= 2 1 >= 2 2 >=
+  O 0.0 x = 1.0 y = 1.0 |>
+
+  I D 1 2 <= 2 1 <= 2 2 <=
+  O 1.0 x = 0.0 y = 1.0 |>
+
+  I D 1 2 == 2 1 == 2 2 ==
+  O 0.0 x = 0.0 y = 1.0 |>
+
+  I D 1 2 != 2 1 != 2 2 !=
+  O 1.0 x = 1.0 y = 0.0 |>
+
+  I D 0 not 1 not
+  O x = 1.0 y = 0.0 |>
 """
 # eot (for searching)
 

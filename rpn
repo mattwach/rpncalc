@@ -1013,6 +1013,7 @@ class RPNCalc(object):
       self.stack.append(0)
     else:
       self.stack.append(1)
+    return True
 
   #
   # Internal Helpers
