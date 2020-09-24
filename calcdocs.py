@@ -494,8 +494,114 @@ function 'C', 'X' and 'V' can be useful for storeing and retrieving the stack.
 """
 
 DOCS['Trigonometry'] = """
-rpncalc can calculate trigonometry results in either degrees or radians.  Use
+`rpncalc` can calculate trigonometry results in either degrees or radians.  Use
 'deg' and 'rad' to change the mode.
+"""
+
+DOCS['Complex Numbers'] = """
+`rpncalc` supports complex numbers.  You can use`i` or `j` to enter them in
+rectangular form.  Whatever format you used last will be used for display:
+
+    |> 5+4i
+      y = 5.0+4.0i       
+
+    |> 6-2j
+      x = 5.0+4.0j       
+      y = 6.0-2.0j  
+
+All of the following ways can be used to input a complex number in rectangular form:
+
+    |> i
+      y = 1.0i           
+
+    |> D -i
+      y = -1.0i          
+
+    |> D 1+i
+      y = 1.0+1.0i       
+
+    |> D 5-4i
+      y = 5.0-4.0i       
+
+    |> D 6 i 7 * -
+      y = 6.0-7.0i       
+
+    |> D -1 sqrt
+      y = 1.0i       
+
+If the imaginary part of a number happens to become zero, the `i` is dropped
+from the number:
+
+    |> 5+5i
+      y = 5.0+5.0i       
+
+    |> 4-5i +
+      y = 9.0 
+
+You can also enter complex number in polar form by using `<`.  By default, the
+angle is interpreted as radians, but putting the calculator in degree mode
+changes this interetation. Entering a complex number in polar form automatically
+enters `polar` display mode (unless `manual` mode was set to supress this):
+
+    |> 5<3.14
+      y = -4.99999365864+0.00796326458243i | 5.0<3.14
+
+    |polar|> deg
+      y = -4.99999365864+0.00796326458243i | 5.0<179.908747671
+
+    |polar|deg|> D -6<90
+      y = -3.67394039744e-16-6.0i | 6.0<-90.0
+
+    |polar|deg|> rad
+      y = -3.67394039744e-16-6.0i | 6.0<-1.57079632679
+
+Like all display modes, polar display mode is just an "on the fly" conversion.
+The rectangular form is always stored on the stack, as can be seen on the
+left side of the `|` in the output.
+
+Sometimes the phase or the magnitude of the polar expression is on the stack.
+For phase, you can simply omit the angle from the expression and it will
+be pulled from the stack.
+
+    |> v:pi 2 /
+      y = 1.57079632679  
+       
+    |> 5<
+      y = 3.06161699787e-16+5.0i | 5.0<1.57079632679
+
+    |polar|> deg
+      y = 3.06161699787e-16+5.0i | 5.0<90.0
+
+To pull the magnitude from the stack, create a polar number of magnitude 1,
+then multiply in the magnitude.  This example pulls both numbers from the stack:
+
+    |> deg
+
+    |deg|> 5 45 1< *
+      y = 3.53553390593+3.53553390593i | 5.0<45.0
+
+The `polar` display mode can be used to enter polar display mode at any time:
+
+    |> 1+i
+      y = 1.0+1.0i       
+
+    |> deg polar
+      y = 1.0+1.0i        | 1.41421356237<45.0
+
+The fixed display mode supports complex numbers most other display modes ignore
+the imaginary part:
+
+    |> 2 fixed 12.345+34.567i
+      y = 12.345+34.567i  | 12.35+34.57i
+
+    |fixed2|> hex
+      y = 12.345+34.567i  | 0x0C
+
+There is also a `fixedpolar` display mode that displays polar results with a fixed
+number of digits.
+
+    |> 1+i deg 3 fixedpolar
+      y = 1.0+1.0i        | 1.414<45.000
 """
 
 DOCS['Type Conversion'] = """
