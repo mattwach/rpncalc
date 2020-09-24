@@ -445,6 +445,11 @@ DATA = """
 
   I D i -2i -10.1+11.2i 171-205i ..
   O s4 = 1.0i | 0x00 s3 = -2.0i | 0x00 s2 = -10.1+11.2i | -0x0A s1 = 171.0-205.0i | 0xAB |hex|mix|>
+
+# --- Binary display modes ---
+
+  I D bin 10.0 -10.5 0b100 -0b100 5.4+4.5i ..
+  O s5 = 10.0 | 0b1010 s4 = -10.5 | -0b1010 s3 = 4 | 0b100 s2 = -4 | -0b100 s1 = 5.4+4.5i | 0b101 |bin|mix|>
 """
 
 class Error(Exception):

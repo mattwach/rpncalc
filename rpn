@@ -538,7 +538,10 @@ class RPNCalc(object):
 
   def PushBin(self, arg):
     self.BinaryMode(None)
-    self.stack.append(int(arg[2:], 2))
+    if arg[0] == '-':
+      self.stack.append(-int(arg[3:], 2))
+    else:
+      self.stack.append(int(arg[2:], 2))
     return True
 
   def Add(self, _):
