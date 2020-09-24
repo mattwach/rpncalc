@@ -468,6 +468,14 @@ DATA = """
 
   I normal D 0b1001
   O y = 9 | 0b1001 |bin|mix|>
+
+# --- Disable and re-enable autoenter
+
+  I normal floats manual D 0x80
+  O y = 128.0 |manual|>
+
+  I auto D 0x80
+  O y = 128 | 0x80 |hex|mix|>
 """
 # eot (for searching)
 
