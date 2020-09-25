@@ -594,8 +594,8 @@ DATA = """
 
 # --- Simple Clipboard ---
 
-  I D 123 c v v
-  O 123.0 x = 123.0 y = 123.0 |>
+  I D 123+i c v v
+  O 123.0+1.0i x = 123.0+1.0i y = 123.0+1.0i |>
 
   I D 123 456 x 789 v
   O 123.0 x = 789.0 y = 456.0 |>
@@ -705,6 +705,33 @@ DATA = """
 
   I D rad 6 1 1< *
   O y = 3.24181383521+5.04882590885i | 6.0<1.0 |polar|>
+
+  I normal D 3+4i real
+  O y = 3.0 |>
+
+  I D 3+4i imag
+  O y = 4.0 |>
+
+  I D 3+4i mag
+  O y = 5.0 |>
+
+  I D 3+4i phase
+  O y = 0.927295218002 |>
+
+  I deg D 3+4i phase
+  O y = 53.1301023542 |deg|>
+
+  I rad D 5 real
+  O y = 5.0 |>
+
+  I D 5 imag
+  O y = 0.0 |>
+
+  I D 5 mag
+  O y = 5.0 |>
+
+  I D 5 phase
+  O y = 0.0 |>
 
 # --- Time Tests ---
 

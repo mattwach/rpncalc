@@ -1059,6 +1059,41 @@ class RPNCalc(object):
       self.stack.append(1)
     return True
 
+  def Real(self, _):
+    y = self.stack.pop()
+    if isinstance(y, complex):
+      self.stack.append(y.real)
+    else:
+      self.stack.append(y)
+    return True
+
+  def Imag(self, _):
+    y = self.stack.pop()
+    if isinstance(y, complex):
+      self.stack.append(y.imag)
+    else:
+      self.stack.append(0)
+    return True
+
+  def Magnitude(self, _):
+    y = self.stack.pop()
+    if isinstance(y, complex):
+      self.stack.append(cmath.polar(y)[0])
+    else:
+      self.stack.append(y)
+    return True
+
+  def Phase(self, _):
+    y = self.stack.pop()
+    if isinstance(y, complex):
+      angle = cmath.polar(y)[1]
+      if self.degree_mode:
+        angle = math.degrees(angle)
+      self.stack.append(angle)
+    else:
+      self.stack.append(0)
+    return True
+
   #
   # Internal Helpers
   #
@@ -1434,6 +1469,11 @@ MATCH_TABLE = [
     (('1<3.14, -2.6<-45.5', re.compile(
         r'{fl}<{fl}$'.format(fl=FLOAT))),
      RPNCalc.PushComplexPolar, CM, 'Complex numbers in polar form'),
+    ('real', RPNCalc.Real, MO, 'Extract real part of a complex number'),
+    ('imag', RPNCalc.Imag, MO,
+     'Extract imaginary part of a complex number'),
+    ('mag', RPNCalc.Magnitude, MO, 'Extract magnitude of a complex number'),
+    ('phase', RPNCalc.Phase, MO, 'Extract phase angle of a complex number'),
 ]
 
 MAX_STACK_ARGS = 10
