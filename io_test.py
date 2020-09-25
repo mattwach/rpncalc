@@ -547,6 +547,24 @@ DATA = """
   I D 1 atan v:pi 4 / -
   O y = 0.0 |>
 
+  I D 1+i sin
+  O y = 1.29845758142+0.634963914785i |>
+
+  I asin
+  O y = 1.0+1.0i |>
+
+  I D 1+i cos
+  O y = 0.833730025131-0.988897705763i |>
+
+  I acos
+  O y = 1.0+1.0i |>
+
+  I D 1+i tan
+  O y = 0.27175258532+1.08392332734i |>
+
+  I atan
+  O y = 1.0+1.0i |>
+
 # --- Trig functions, in degrees ---
 
   I D deg 30 sin
@@ -566,6 +584,10 @@ DATA = """
 
   I D 1 atan 
   O y = 45.0 |deg|>
+
+  I D 1+i sin
+  E While parsing sin: Degree mode is not supported for complex trigonometry !!
+  O |deg|>
 
   I rad
   A
