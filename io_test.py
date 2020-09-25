@@ -511,6 +511,22 @@ DATA = """
   I D -4.5e-6<-1.2e-3
   O y = -4.49999676e-06+5.399998704e-09i | 4.5e-06<3.14039265359 |polar|>
 
+  I normal D 1e
+  E Value Error: invalid literal for float(): 1e !!
+  O |>
+
+  I normal D e1
+  E While parsing e1: Unknown Argument (try ? for help) !!
+  O |>
+
+  I 1-2
+  E Value Error: invalid literal for float(): 1-2 !!
+  O |>
+
+  I 1.2.3
+  E While parsing 1.2.3: Unknown Argument (try ? for help) !!
+  O |>
+
 # --- Trig functions, in radians ---
 
   I D normal v:pi 6 / sin
