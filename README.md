@@ -303,6 +303,10 @@ Functions are also provided to extract the real, imaginary, magnitude and angle:
     1+5i, 3-2j            Complex number in rectangular form
     1<3.14, -2.6<-45.5    Complex numbers in polar form (pull phase from stack)
     1<3.14, -2.6<-45.5    Complex numbers in polar form
+    real                  Extract real part of a complex number
+    imag                  Extract imaginary part of a complex number
+    mag                   Extract magnitude of a complex number
+    phase                 Extract phase angle of a complex number
 
 ## Operators
 
@@ -638,10 +642,6 @@ interactive is the interactive default.
     interactive           Show interactive stack dump
     manual                Do not automatically change display modes
     auto                  Automatically change display modes based on input syntax (default)
-    real                  Extract real part of a complex number
-    imag                  Extract imaginary part of a complex number
-    mag                   Extract magnitude of a complex number
-    phase                 Extract phase angle of a complex number
 
 ## Expression Debugging
 

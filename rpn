@@ -1469,11 +1469,11 @@ MATCH_TABLE = [
     (('1<3.14, -2.6<-45.5', re.compile(
         r'{fl}<{fl}$'.format(fl=FLOAT))),
      RPNCalc.PushComplexPolar, CM, 'Complex numbers in polar form'),
-    ('real', RPNCalc.Real, MO, 'Extract real part of a complex number'),
-    ('imag', RPNCalc.Imag, MO,
+    ('real', RPNCalc.Real, CM, 'Extract real part of a complex number'),
+    ('imag', RPNCalc.Imag, CM,
      'Extract imaginary part of a complex number'),
-    ('mag', RPNCalc.Magnitude, MO, 'Extract magnitude of a complex number'),
-    ('phase', RPNCalc.Phase, MO, 'Extract phase angle of a complex number'),
+    ('mag', RPNCalc.Magnitude, CM, 'Extract magnitude of a complex number'),
+    ('phase', RPNCalc.Phase, CM, 'Extract phase angle of a complex number'),
 ]
 
 MAX_STACK_ARGS = 10
