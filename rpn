@@ -20,6 +20,9 @@ import conversion
 class Error(Exception):
   pass
 
+class AutoModeDisabledError(Error):
+  pass
+
 class UnknownArgumentError(Error):
   pass
 
@@ -406,11 +409,11 @@ class RPNCalc(object):
     self.debug_mode = False
     return False
 
-  def MixedMode(self, _):
+  def MixMode(self, _):
     self.mixed_mode = True
     return False
 
-  def FloatMode(self, _):
+  def NoMixMode(self, _):
     self.mixed_mode = False
     return False
 
@@ -714,13 +717,26 @@ class RPNCalc(object):
     self.stack.reverse()
     return True
 
-  def Type(self, _):
+  def ToInt(self, _):
+    if self.manual_mode and not self.mixed_mode:
+      raise AutoModeDisabledError(
+          'Can not automatically enter mixed mode because auto mode is '
+          'disabled.')
+
     y = self.stack.pop()
-    if isinstance(y, int):
-      self.stack.append(float(y))
-    else:
+    if isinstance(y, complex):
+      y = y.real
+    self.stack.append(int(y))
+    self.mixed_mode = True
+    return True
+
+  def ToFloat(self, _):
+    y = self.stack.pop()
+    if isinstance(y, complex):
+      y = y.real
+    self.stack.append(float(y))
+    if not self.manual_mode:
       self.mixed_mode = True
-      self.stack.append(int(y))
     return True
 
   #
@@ -772,7 +788,10 @@ class RPNCalc(object):
     return False
 
   def PasteStack(self, _):
-    self.stack = copy.copy(self.stack_clipboard)
+    if self.stack_clipboard:
+      self.stack = copy.copy(self.stack_clipboard)
+    else:
+      self.stack = []
     return True
 
   def CopyVar(self, arg):
@@ -1347,9 +1366,10 @@ MATCH_TABLE = [
      RPNCalc.PushDateTime, NM, 'Date'),
     ('now', RPNCalc.PushCurrentTime, NM, 'Current time and date'),
     ('today', RPNCalc.PushToday, NM, 'Current date'),
-    ('mixed', RPNCalc.MixedMode, NM, 'Allow integers and floats'),
-    ('floats', RPNCalc.FloatMode, NM, 'Convert everything to floats (Default)'),
-    ('t', RPNCalc.Type, NM, 'Convert float to int (and visa versa)'),
+    ('mix', RPNCalc.MixMode, NM, 'Allow integers and floats'),
+    ('nomix', RPNCalc.NoMixMode, NM, 'Convert everything to floats (Default)'),
+    ('int', RPNCalc.ToInt, NM, 'Convert to int'),
+    ('float', RPNCalc.ToFloat, NM, 'Convert to float'),
 
     ('*', RPNCalc.Multiply, OP, 'x * y'),
     ('+', RPNCalc.Add, OP, 'x + y'),

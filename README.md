@@ -151,9 +151,10 @@ format.  See "Display Modes" for more information on how this works and how to
 change the behavior.
 
 Note that rpncalc supports both integer and floating point operations but
-converts all numbers to floating point by default.  Use the 'mixed' and
-'floats' commands to change this behavior.  You can also use 't' to swap
-the number at the top of the stack between integer and floating point.
+converts all numbers to floating point by default.  Use the `mix` and
+`nomix` commands to change this behavior.  You can use the `int` and `float`
+commands to convert a number to the specified type.  These commands will
+enter `mix` mode automatically unless `manual` mode is active.
 
 ### Supported Commands
 
@@ -170,9 +171,10 @@ the number at the top of the stack between integer and floating point.
     07/30/2006+16:00:00   Date
     now                   Current time and date
     today                 Current date
-    mixed                 Allow integers and floats
-    floats                Convert everything to floats (Default)
-    t                     Convert float to int (and visa versa)
+    mix                   Allow integers and floats
+    nomix                 Convert everything to floats (Default)
+    int                   Convert to int
+    float                 Convert to float
 
 ## Complex Numbers
 

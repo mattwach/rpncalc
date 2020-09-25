@@ -474,9 +474,10 @@ format.  See "Display Modes" for more information on how this works and how to
 change the behavior.
 
 Note that rpncalc supports both integer and floating point operations but
-converts all numbers to floating point by default.  Use the 'mixed' and
-'floats' commands to change this behavior.  You can also use 't' to swap
-the number at the top of the stack between integer and floating point.
+converts all numbers to floating point by default.  Use the `mix` and
+`nomix` commands to change this behavior.  You can use the `int` and `float`
+commands to convert a number to the specified type.  These commands will
+enter `mix` mode automatically unless `manual` mode is active.
 """
 
 DOCS['Operators'] = """

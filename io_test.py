@@ -111,7 +111,7 @@ DATA = """
   I D 0x08 4 <<
   O y = 128 | 0x80 |hex|mix|>
 
-  I normal floats D 7+i 2+i &
+  I normal nomix D 7+i 2+i &
   E While parsing &: TypeError: can't convert complex to int !!
   O |>
 
@@ -141,7 +141,7 @@ DATA = """
 
 # --- Scientific ---
 
-  I normal floats D -12.34e6
+  I normal nomix D -12.34e6
   O y = -12340000.0 |>
 
   I D 12.34e-6
@@ -648,7 +648,18 @@ DATA = """
   E While parsing c:myvar: Not Enough Stack Arguments !!
   O |>
 
+  I D x:myvar
+  E While parsing x:myvar: Not Enough Stack Arguments !!
+  O |>
+
+  I D v:foo
+  E While parsing v:foo: KeyError !!
+  O |>
+
 # --- Full Stack Clipboard ---
+
+  I V
+  O |>
 
   I D 1 2 3 C
   O 1.0 x = 2.0 y = 3.0 |>
@@ -664,7 +675,7 @@ DATA = """
 
 # --- Integers ---
 
-  I D normal mixed 1 2.0
+  I D normal mix 1 2.0
   O x = 1 y = 2.0 |mix|>
 
   I +
@@ -673,18 +684,43 @@ DATA = """
   I D 5 2 /
   O y = 2 |mix|>
 
-  I D mixed 1 2.0 floats
+  I D mix 1 2.0 nomix
   O x = 1 y = 2.0 |>
 
-  I D 5.0 t
+  I D nomix 5.0 int
   O y = 5 |mix|>
 
-  I t
+  I nomix float
   O y = 5.0 |mix|>
+
+  I nomix D 5+i int
+  O y = 5 |mix|>
+
+  I nomix D 5+i float
+  O y = 5.0 |mix|>
+
+  I manual nomix D 1 2.0
+  O x = 1.0 y = 2.0 |manual|>
+
+  I D 5.0 int
+  E While parsing int: Can not automatically enter mixed mode because auto mode is disabled. !!
+  O y = 5.0 |manual|>
+
+  I D mix 5.0 int
+  O y = 5 |mix|manual|>
+
+  I D mix 5+i int
+  O y = 5 |mix|manual|>
+
+  I D nomix 5 float
+  O y = 5.0 |manual|>
+
+  I D 5+i float
+  O y = 5.0 |manual|>
 
 # --- Complex Numbers ---
 
-  I floats normal D i
+  I auto nomix normal D i
   O y = 1.0i |>
 
   I D -i
@@ -792,7 +828,7 @@ DATA = """
 
 # --- Stack Management ---
 
-  I normal floats D 1 2 3 4 5 6 7 8 9 10 11
+  I normal nomix D 1 2 3 4 5 6 7 8 9 10 11
   O ...  2.0  3.0  4.0  5.0  6.0  7.0  8.0  9.0 x = 10.0 y = 11.0 |>
 
   I .
@@ -935,7 +971,7 @@ DATA = """
 
 # --- Duration Display Mode ---
 
-  I D floats dur 1234 12345678.9 3.14 10.5+4.2i ..
+  I D nomix dur 1234 12345678.9 3.14 10.5+4.2i ..
   O s4 = 1234.0 | 20:34 s3 = 12345678.9 | 142d21:21:18 s2 = 3.14 | 00:03 s1 = 10.5+4.2i | 00:10 |dur|> 
 
 # --- Date and Time Display Modes - Due to time zones, just make sure that it doesn't crash ---
@@ -994,7 +1030,7 @@ DATA = """
 
 # --- Disable and re-enable autoenter ---
 
-  I normal floats manual D 0x80
+  I normal nomix manual D 0x80
   O y = 128.0 |manual|>
 
   I auto D 0x80
@@ -1002,7 +1038,7 @@ DATA = """
 
 # --- Batch and interactive modes ---
 
-  I normal floats D batch 4 5 +
+  I normal nomix D batch 4 5 +
   O 9.0 |batch|>
 
   I interactive .
@@ -1115,7 +1151,7 @@ def get_output(fout, max_chars=8192):
       data = line.strip().split()
       logging.debug('data -> %s', data)
       return data
-  raise MaxLinesError('max_chars exceeded.')
+  raise MaxLinesError('max_chars exceeded: %s' % ''.join(line_data))
 
 
 def compare_output(line_number, expected, actual):
