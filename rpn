@@ -47,6 +47,9 @@ class DegreeModeNotSupportedError(Error):
 class InvalidPolarFormatError(Error):
   pass
 
+class StackEmptyError(Error):
+  pass
+
 #
 # Builtin vars
 #
@@ -814,18 +817,23 @@ class RPNCalc(object):
   #
 
   def Sum(self, _):
+    self._CheckStackNotEmpty()
     list_sum = sum(self.stack)
     self.stack = [list_sum]
     return True
 
   def Mean(self, _):
-    list_sum = float(sum(self.stack))
+    self._CheckStackNotEmpty()
+    list_sum = sum(self.stack)
     self.stack = [list_sum / len(self.stack)]
     return True
 
   def Median(self, _):
-    self.stack.sort()
-    self.stack = [self.stack[len(self.stack) / 2]]
+    self._CheckStackNotEmpty()
+    l = self.stack
+    self.stack = []
+    l.sort()
+    self.stack.append(l[len(l) / 2])
     return True
 
   def Log(self, _):
@@ -856,6 +864,10 @@ class RPNCalc(object):
     else:
       self.stack.append(math.sqrt(y))
     return True
+
+  def _CheckStackNotEmpty(self):
+    if not self.stack:
+      raise StackEmptyError('Stack is empty')
 
   def _PopTrig(self):
     y = self.stack.pop()

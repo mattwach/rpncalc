@@ -803,6 +803,9 @@ DATA = """
   I D 07/30/2006+16:00:00
   O y = 1154300400.0  | 07/30/2006+16:00:00 (Sun) |time|>
 
+  I D 1/14/2020 1+i +
+  O y = 1578988801.0+1.0i | 01/14/2020+00:00:01 (Tue) |time|>
+
   I D now
   A
 
@@ -816,6 +819,9 @@ DATA = """
 
   I D -4d
   O y = -345600.0 | -4d |dur|>
+
+  I D 1d 66+100i +
+  O y = 86466.0+100.0i | 1d00:01:06 |dur|>
 
   I D 1d14:23:12
   O y = 138192.0 | 1d14:23:12 |dur|>
@@ -917,6 +923,28 @@ DATA = """
 
   I V median
   O y = 36.0 |>
+
+  I D 1+i 1+2i 3-i C sum
+  O y = 5.0+2.0i |>
+
+  I V mean
+  O y = 1.66666666667+0.666666666667i |>
+
+  I V median
+  E While parsing median: TypeError: no ordering relation is defined for complex numbers !!
+  O |>
+
+  I D sum
+  E While parsing sum: Stack is empty !!
+  O |>
+
+  I D mean
+  E While parsing mean: Stack is empty !!
+  O |>
+
+  I D median
+  E While parsing median: Stack is empty !!
+  O |>
 
 # --- Fixed Display Mode ---
 
