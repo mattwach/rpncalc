@@ -1124,6 +1124,10 @@ DATA = """
   I D 6 8 0 ?pyth
   O x = 6.0 y = 8.0 |>
 
+  I D m:foo
+  E While parsing m:foo: Unknown Argument (try ? for help) !!
+  O |>
+
   I l:m
   O pyth | 2 ** s 2 ** + sqrt |>
 
@@ -1147,8 +1151,88 @@ DATA = """
   I D 1 2 != 2 1 != 2 2 !=
   O 1.0 x = 1.0 y = 0.0 |>
 
-  I D 0 not 1 not
-  O x = 1.0 y = 0.0 |>
+  I D 0 not 1 not 1+i not
+  O 1.0 x = 0.0 y = 0.0 |>
+
+  I D 1 1+i <
+  E While parsing <: TypeError: no ordering relation is defined for complex numbers !!
+  O |>
+
+  I D 1 1+i >
+  E While parsing >: TypeError: no ordering relation is defined for complex numbers !!
+  O |>
+
+  I D 1 1+i <=
+  E While parsing <=: TypeError: no ordering relation is defined for complex numbers !!
+  O |>
+
+  I D 1 1+i >=
+  E While parsing >=: TypeError: no ordering relation is defined for complex numbers !!
+  O |>
+
+  I D 1 1+i ==
+  O y = 0.0 |>
+
+  I D 1+i 1+i ==
+  O y = 1.0 |>
+
+  I D 1 1+i !=
+  O y = 1.0 |>
+
+  I D 1+i 1+i !=
+  O y = 0.0 |>
+
+  I D >
+  E While parsing >: Not Enough Stack Arguments !!
+  O |>
+
+  I D 1 >
+  E While parsing >: Not Enough Stack Arguments !!
+  O |>
+
+  I D >=
+  E While parsing >=: Not Enough Stack Arguments !!
+  O |>
+
+  I D 1 >=
+  E While parsing >=: Not Enough Stack Arguments !!
+  O |>
+
+  I D <
+  E While parsing <: Not Enough Stack Arguments !!
+  O |>
+
+  I D 1 <
+  E While parsing <: Not Enough Stack Arguments !!
+  O |>
+
+  I D <=
+  E While parsing <=: Not Enough Stack Arguments !!
+  O |>
+
+  I D 1 <=
+  E While parsing <=: Not Enough Stack Arguments !!
+  O |>
+
+  I D ==
+  E While parsing ==: Not Enough Stack Arguments !!
+  O |>
+
+  I D 1 ==
+  E While parsing ==: Not Enough Stack Arguments !!
+  O |>
+
+  I D !=
+  E While parsing !=: Not Enough Stack Arguments !!
+  O |>
+
+  I D 1 !=
+  E While parsing !=: Not Enough Stack Arguments !!
+  O |>
+
+  I D not
+  E While parsing not: Not Enough Stack Arguments !!
+  O |>
 """
 # eot (for searching)
 
