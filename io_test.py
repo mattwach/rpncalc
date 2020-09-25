@@ -1100,6 +1100,13 @@ DATA = """
   I D 4 ft>yards 25 25 * * yard*yard*yard>gallon
   O y = 168311.688488 |>
 
+  I D 10+i in>cm
+  O y = 25.4+2.54i |>
+
+  I D in>cm
+  E While parsing in>cm: Not Enough Stack Arguments !!
+  O |>
+
   I l:c
   A
 
