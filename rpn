@@ -470,7 +470,7 @@ class RPNCalc(object):
     angle = self.stack.pop()
     if isinstance(angle, complex):
       raise InvalidPolarFormatError('Phase can not be a complex number')
-    mag = arg[:1]
+    mag = arg[:-1]
     return self.PushPolarCommon(float(mag), float(angle))
 
   def PushPolarCommon(self, mag, angle):
@@ -1428,11 +1428,11 @@ MATCH_TABLE = [
     ('!=', RPNCalc.NotEqual, MA, '1 if x != y, 0 otherwise'),
     ('not', RPNCalc.Not, MA, '1 if y == 0, 0 otherwise'),
     (('1<3.14, -2.6<-45.5', re.compile(
-        r'^-?([0-9]+)?(\.[0-9]+)?<$')),
+        r'^%s<$' % FLOAT)),
      RPNCalc.PushComplexPolarPhaseOnStack, CM,
        'Complex numbers in polar form (pull phase from stack)'),
     (('1<3.14, -2.6<-45.5', re.compile(
-        r'^-?([0-9]+)?(\.[0-9]+)?<-?([0-9]+)?(\.[0-9]+)?$')),
+        r'{fl}<{fl}$'.format(fl=FLOAT))),
      RPNCalc.PushComplexPolar, CM, 'Complex numbers in polar form'),
 ]
 
