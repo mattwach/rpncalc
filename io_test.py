@@ -55,6 +55,9 @@ DATA = """
   I D 5 2 ** v:pi *
   O y = 78.5398163397 |>
 
+  I D 1e6 2.5e-4
+  O x = 1000000.0 y = 0.00025 |>
+
 # --- Operators ---
 
   I D 4 5 +
@@ -68,6 +71,26 @@ DATA = """
 
   I D 4 5 /
   O y = 0.8 |>
+
+  I D 1+i 2+i +
+  O y = 3.0+2.0i |>
+
+  I D 1+i 2+i -
+  O y = -1.0 |>
+
+  I D 1+i 2+i *
+  O y = 1.0+3.0i |>
+
+  I D 1+i 2+i /
+  O y = 0.6+0.2i |>
+
+  I D +
+  E While parsing +: Not Enough Stack Arguments !!
+  O |>
+
+  I D 5 -
+  E While parsing -: Not Enough Stack Arguments !!
+  O |>
 
 # --- Logic ---
 
@@ -85,6 +108,34 @@ DATA = """
 
   I D 0x08 4 <<
   O y = 128 | 0x80 |hex|mix|>
+
+  I normal floats D 7+i 2+i &
+  E While parsing &: TypeError: can't convert complex to int !!
+  O |>
+
+  I D 7+i 2+i |
+  E While parsing |: TypeError: can't convert complex to int !!
+  O |>
+
+  I D 7+i 2+i ^
+  E While parsing ^: TypeError: can't convert complex to int !!
+  O |>
+
+  I D 7+i 2 >>
+  E While parsing >>: TypeError: can't convert complex to int !!
+  O |>
+
+  I D 7 2+i >>
+  E While parsing >>: TypeError: can't convert complex to int !!
+  O |>
+
+  I D 7+i 2 <<
+  E While parsing <<: TypeError: can't convert complex to int !!
+  O |>
+
+  I D 7 2+i <<
+  E While parsing <<: TypeError: can't convert complex to int !!
+  O |>
 
 # --- Scientific ---
 
@@ -123,6 +174,126 @@ DATA = """
 
   I D 5 3 **
   O y = 125.0 |>
+
+  I D 5e6i
+  O y = 5000000.0i |>
+
+  I D -5e6i
+  O y = -5000000.0i |>
+
+  I D 5e-6i
+  O y = 5e-06i |>
+
+  I D -5e-6i
+  O y = -5e-06i |>
+
+  I D 5.1e6i
+  O y = 5100000.0i |>
+
+  I D -5.1e6i
+  O y = -5100000.0i |>
+
+  I D 5.1e-6i
+  O y = 5.1e-06i |>
+
+  I D -5.1e-6i
+  O y = -5.1e-06i |>
+
+  I D 1+5e6i
+  O y = 1.0+5000000.0i |>
+
+  I D 1-5e6i
+  O y = 1.0-5000000.0i |>
+
+  I D 1+5e-6i
+  O y = 1.0+5e-06i |>
+
+  I D 1-5e-6i
+  O y = 1.0-5e-06i |>
+
+  I D 1+5.1e6i
+  O y = 1.0+5100000.0i |>
+
+  I D 1-5.1e6i
+  O y = 1.0-5100000.0i |>
+
+  I D 1.0+5.1e-6i
+  O y = 1.0+5.1e-06i |>
+
+  I D 1.0-5.1e-6i
+  O y = 1.0-5.1e-06i |>
+
+  I D -1+5e6i
+  O y = -1.0+5000000.0i |>
+
+  I D -1-5e6i
+  O y = -1.0-5000000.0i |>
+
+  I D -1+5e-6i
+  O y = -1.0+5e-06i |>
+
+  I D -1-5e-6i
+  O y = -1.0-5e-06i |>
+
+  I D -1+5.1e6i
+  O y = -1.0+5100000.0i |>
+
+  I D -1-5.1e6i
+  O y = -1.0-5100000.0i |>
+
+  I D -1+5.1e-6i
+  O y = -1.0+5.1e-06i |>
+
+  I D -1-5.1e-6i
+  O y = -1.0-5.1e-06i |>
+
+  I D 1.2+5e6i
+  O y = 1.2+5000000.0i |>
+
+  I D 1.2-5e6i
+  O y = 1.2-5000000.0i |>
+
+  I D 1.2+5e-6i
+  O y = 1.2+5e-06i |>
+
+  I D 1.2-5e-6i
+  O y = 1.2-5e-06i |>
+
+  I D 1.2+5.1e6i
+  O y = 1.2+5100000.0i |>
+
+  I D 1.2-5.1e6i
+  O y = 1.2-5100000.0i |>
+
+  I D 1.2+5.1e-6i
+  O y = 1.2+5.1e-06i |>
+
+  I D 1.2-5.1e-6i
+  O y = 1.2-5.1e-06i |>
+
+  I D -1.2+5e6i
+  O y = -1.2+5000000.0i |>
+
+  I D -1.2-5e6i
+  O y = -1.2-5000000.0i |>
+
+  I D -1.2+5e-6i
+  O y = -1.2+5e-06i |>
+
+  I D -1.2-5e-6i
+  O y = -1.2-5e-06i |>
+
+  I D -1.2+5.1e6i
+  O y = -1.2+5100000.0i |>
+
+  I D -1.2-5.1e6i
+  O y = -1.2-5100000.0i |>
+
+  I D -1.2+5.1e-6i
+  O y = -1.2+5.1e-06i |>
+
+  I D -1.2-5.1e-6i
+  O y = -1.2-5.1e-06i |>
 
 # --- Trig functions, in radians ---
 

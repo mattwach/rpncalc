@@ -432,6 +432,9 @@ class RPNCalc(object):
     if not arg or arg[-1] == '-' or arg[-1] == '+':
       arg += '1'  # no number was provided for i, add a one to simplify parsing
 
+    # e- complicates the splits below, so take it out, then put it back in later
+    arg = arg.replace('e-', 'N')
+
     if '+' in arg:
       real, imag = arg.split('+')
       if not real:
@@ -450,6 +453,9 @@ class RPNCalc(object):
         _, real, imag = arg.split('-')
         real = '-' + real
         imag = '-' + imag
+
+    real = real.replace('N', 'e-')
+    imag = imag.replace('N', 'e-')
 
     self.stack.append(complex(float(real), float(imag)))
     return True
@@ -641,38 +647,38 @@ class RPNCalc(object):
     return True
 
   def LogicalAnd(self, _):
-    self.HexMode(None)
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(int(x) & int(y))
+    self.HexMode(None)
     return True
 
   def LogicalOr(self, _):
-    self.HexMode(None)
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(int(x) | int(y))
+    self.HexMode(None)
     return True
 
   def LogicalXOR(self, _):
-    self.HexMode(None)
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(int(x) ^ int(y))
+    self.HexMode(None)
     return True
 
   def LogicalShiftRight(self, _):
-    self.HexMode(None)
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(int(x) >> int(y))
+    self.HexMode(None)
     return True
 
   def LogicalShiftLeft(self, _):
-    self.HexMode(None)
     y = self.stack.pop()
     x = self.stack.pop()
     self.stack.append(int(x) << int(y))
+    self.HexMode(None)
     return True
 
   def Swap(self, _):
@@ -1261,6 +1267,9 @@ TY = 'Type Conversion'
 UR = 'Undo/Redo'
 CM = 'Complex Numbers'
 
+INT = '-?[0-9]+'
+FLOAT = r'-?([0-9]|\.)[0-9]*\.?[0-9]*e?-?[0-9]*'
+
 MATCH_TABLE = [
     ('.', RPNCalc.DumpState, SM, 'Dump Stack (short form)'),
     ('..', RPNCalc.DumpStateLong, SM, 'Dump Full Stack'),
@@ -1272,19 +1281,18 @@ MATCH_TABLE = [
     ('rd', RPNCalc.RollDown, SM, 'Roll Stack Down'),
     ('ru', RPNCalc.RollUp, SM, 'Roll Stack Up'),
 
-    (('1.0, 1., .5', re.compile(r'^-?([0-9]+)?\.[0-9]*e?-?[0-9]*$')),
+    (('1, -512', re.compile(r'%s$' % INT)),
+     RPNCalc.PushInt, NM, 'Integers'),
+    (('1.0, 1., .5, 1e6, 2.5e-6', re.compile(r'^%s$' % FLOAT)),
      RPNCalc.PushFloat, NM, 'Floating point numbers'),
-    (('1e6, 2.5e-6', re.compile(r'^-?[0-9]+[0-9]*e-?[0-9]*$')),
-     RPNCalc.PushFloat, NM, 'Scientific numbers'),
-    (('1+5i, 3-2j', re.compile(
-        r'^-?([0-9]+)?(\.[0-9]+)?[+-]?([0-9]+)?(\.[0-9]+)?[ij]$')),
+    (('i, -2j', re.compile(r'-?(%s)?[ij]$' % FLOAT)),
+     RPNCalc.PushComplex, CM, 'Complex number in rectangular form'),
+    (('1+5i, 3-2j', re.compile(r'^{fl}\+?({fl})?[ij]$'.format(fl=FLOAT))),
      RPNCalc.PushComplex, CM, 'Complex number in rectangular form'),
     (('0x36, -0x1234', re.compile(r'^-?0x[0-9a-fA-F]+$')),
      RPNCalc.PushHex, NM, 'Hexidecimal numbers'),
     (('1001b, -1001b', re.compile(r'^-?0b[0-1]+$')),
      RPNCalc.PushBin, NM, 'Binary numbers'),
-    (('1, -512', re.compile(r'^-?[0-9]+$')),
-     RPNCalc.PushInt, NM, 'Integers'),
     (('4d, 15d', re.compile(r'^-?[0-9]+d$')),
      RPNCalc.PushDurationDays, NM, 'Time Duration, in days'),
     (('1d14:23:12', re.compile(r'^-?[0-9]+d[0-9]+:[0-5][0-9]:[0-5][0-9]$')),

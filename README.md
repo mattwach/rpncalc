@@ -157,11 +157,10 @@ the number at the top of the stack between integer and floating point.
 
 ### Supported Commands
 
-    1.0, 1., .5           Floating point numbers
-    1e6, 2.5e-6           Scientific numbers
+    1, -512               Integers
+    1.0, 1., .5, 1e6, 2.5e-6  Floating point numbers
     0x36, -0x1234         Hexidecimal numbers
     1001b, -1001b         Binary numbers
-    1, -512               Integers
     4d, 15d               Time Duration, in days
     1d14:23:12            Time Duration, DdHH:MM:SS
     534:12:00             Time Duration H:MM:SS
@@ -283,6 +282,7 @@ number of digits.
 
 ### Supported Commands
 
+    i, -2j                Complex number in rectangular form
     1+5i, 3-2j            Complex number in rectangular form
     1<3.14, -2.6<-45.5    Complex numbers in polar form (pull phase from stack)
     1<3.14, -2.6<-45.5    Complex numbers in polar form
