@@ -154,9 +154,25 @@ rpncalc supports 3 types of clipboards:
 You can copy between this clipboard and the stack with 'c' and 'v'.  You can
 also 'cut' (pop) the last value on the stack to the clipboard with 'x'.
 
-You can also use pc, px, and pv to cut. copy and paste values deeper in the
-stack.  Here is an example that solves the quadratic formula without creating
-named global variables.  The Formula is (sqrt(b*b - 4ac) - b)/(2a)
+#### Examples:
+
+    # Copy 5 to clipboard
+    |> 5 c
+    y = 5.0            
+
+    # Clear the stack
+    |> D
+
+    # Paste it back in
+    |> v
+    y = 5.0            
+
+    # Add one to make 6, cut the result.  Stack is empty
+    |> 1 + x
+
+    # Paste it back in
+    |> v
+    y = 6.0     
 
 ### Variable Clipboard
 
