@@ -1,6 +1,7 @@
 #!/usr/bin/python
 """Runs IO tests on RPN."""
 
+import inspect
 import logging
 import select
 import subprocess
@@ -25,6 +26,7 @@ logging.basicConfig(level=logging.INFO)
 #   # : A comment
 #   I : Send some data to rpn
 #   O : Expect this data to be returned
+FIRST_DATA_LINE = inspect.currentframe().f_lineno + 1
 DATA = """
 # --- Basic tests ---
 
@@ -565,6 +567,10 @@ DATA = """
   I atan
   O y = 1.0+1.0i |>
 
+  I D sin
+  E While parsing sin: Not Enough Stack Arguments !!
+  O |>
+
 # --- Trig functions, in degrees ---
 
   I D deg 30 sin
@@ -589,6 +595,10 @@ DATA = """
   E While parsing sin: Degree mode is not supported for complex trigonometry !!
   O |deg|>
 
+  I D sin
+  E While parsing sin: Not Enough Stack Arguments !!
+  O |deg|>
+
   I rad
   A
 
@@ -599,6 +609,14 @@ DATA = """
 
   I D 123 456 x 789 v
   O 123.0 x = 789.0 y = 456.0 |>
+  
+  I D c
+  E While parsing c: Not Enough Stack Arguments !!
+  O |>
+
+  I D x
+  E While parsing x: Not Enough Stack Arguments !!
+  O |>
 
 # --- Stack Clipboard ---
 
@@ -611,6 +629,10 @@ DATA = """
   I D 1 2 3 4 c 2 pv
   O 1.0 2.0 4.0 x = 3.0 y = 4.0 |>
 
+  I D 1 1 pc
+  E While parsing pc: Not Enough Stack Arguments !!
+  O y = 1.0 |>
+
 # --- Variable Clipboard ---
 
   I D 1234 c:myvar 0 v:myvar
@@ -621,6 +643,10 @@ DATA = """
 
   I D l:v
   O c = 299792458.0 e = 2.71828182846 myvar = 5678.0 pi = 3.14159265359 |>
+
+  I D c:myvar
+  E While parsing c:myvar: Not Enough Stack Arguments !!
+  O |>
 
 # --- Full Stack Clipboard ---
 
@@ -1167,11 +1193,11 @@ def main():
 
   for line_number, line in enumerate(DATA.split('\n')):
     try:
-      tests_passed += parse_line(line_number + 1, line, p)
+      tests_passed += parse_line(line_number + FIRST_DATA_LINE, line, p)
     except OutputMismatch as e:
       sys.stderr.write('%s\n' % e)
       tests_failed += 1
-  check_for_extra_output(p, len(DATA), "EOF")
+  check_for_extra_output(p, len(DATA) + FIRST_DATA_LINE, "EOF")
 
   # Wrap up
   sys.stdout.write('%s: %d / %d tests passed\n' % (
