@@ -301,7 +301,7 @@ Functions are also provided to extract the real, imaginary, magnitude and angle:
 
     i, -2j                Complex number in rectangular form
     1+5i, 3-2j            Complex number in rectangular form
-    1<3.14, -2.6<-45.5    Complex numbers in polar form (pull phase from stack)
+    1<, -2.6<             Complex numbers in polar form (pull phase from stack)
     1<3.14, -2.6<-45.5    Complex numbers in polar form
     real                  Extract real part of a complex number
     imag                  Extract imaginary part of a complex number
