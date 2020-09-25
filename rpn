@@ -636,7 +636,7 @@ class RPNCalc(object):
     return True
 
   def Inverse(self, _):
-    y = float(self.stack.pop())
+    y = self.stack.pop()
     self.stack.append(1.0 / y)
     return True
 
@@ -647,9 +647,7 @@ class RPNCalc(object):
 
   def AbsoluteValue(self, _):
     y = self.stack.pop()
-    if y < 0:
-      y = -y
-    self.stack.append(y)
+    self.stack.append(abs(y))
     return True
 
   def LogicalAnd(self, _):
