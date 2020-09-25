@@ -238,9 +238,9 @@ Like all display modes, polar display mode is just an "on the fly" conversion.
 The rectangular form is always stored on the stack, as can be seen on the
 left side of the `|` in the output.
 
-Sometimes the phase or the magnitude of the polar expression is on the stack.
-For phase, you can simply omit the angle from the expression and it will
-be pulled from the stack.
+Sometimes the desired phase or the magnitude of the polar expression is already
+on the stack.  For phase, you can simply omit the angle from the expression and
+it will be pulled from the stack.
 
     |> v:pi 2 /
     y = 1.57079632679  
