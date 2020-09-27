@@ -692,6 +692,31 @@ DATA = """
   E While parsing $foo: KeyError !!
   O |>
 
+  I D 5 x= .
+  O |>
+
+  I myvar!=
+  O |>
+
+  I myvar!=
+  E While parsing myvar!=: KeyError !!
+  O |>
+  
+  I set
+  O c = 299792458.0 e = 2.71828182846 pi = 3.14159265359 x = 5.0 |>
+
+  I pushv
+  O |>
+
+  I set
+  O c = 299792458.0 e = 2.71828182846 pi = 3.14159265359 x = 5.0 |>
+
+  I 4 a= 6 x= set
+  O a = 4.0 c = 299792458.0 e = 2.71828182846 pi = 3.14159265359 x = 6.0 |>
+
+  I popv set
+  O c = 299792458.0 e = 2.71828182846 pi = 3.14159265359 x = 5.0 |>
+
 # --- Full Stack Clipboard ---
 
   I V
@@ -1201,6 +1226,16 @@ DATA = """
 
   I l:m
   O pyth | 2 ** s 2 ** + sqrt |>
+
+  I m:local 5 a=
+  O |>
+
+  I @local
+  O |>
+
+  I $a
+  E While parsing $a: KeyError !!
+  O |>
 
 # --- Conditionals ---
 

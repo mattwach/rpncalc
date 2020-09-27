@@ -80,6 +80,7 @@ class RPNCalc(object):
     self.fixed_places = 0
     self.imagj = False
     self.var_dict = copy.copy(BUILTIN_VARS)
+    self.var_stack = []
     self.degree_mode = False
     self.debug_mode = False
     self.debug_indent = 0
@@ -288,6 +289,14 @@ class RPNCalc(object):
     for name in sorted(self.var_dict):
       sys.stdout.write('%-15s =  %s\n' % (name, self.var_dict[name]))
 
+    return False
+
+  def PushVars(self, _):
+    self.var_stack.append(dict(self.var_dict))
+    return False
+
+  def PopVars(self, _):
+    self.var_dict = self.var_stack.pop()
     return False
 
   #
@@ -816,6 +825,11 @@ class RPNCalc(object):
     self.var_dict[var_name] = self.stack.pop()
     return True
 
+  def UnsetVar(self, arg):
+    var_name = arg[:-2]
+    del self.var_dict[var_name]
+    return False
+
   def GetVar(self, arg):
     var_name = arg[1:]
     self.stack.append(self.var_dict[var_name])
@@ -1026,13 +1040,18 @@ class RPNCalc(object):
     if macro_name not in self.macros:
       raise MacroNotFoundError('Macro Not Found: %s' % macro_name)
 
-    if self.debug_mode:
-      self._DebugMessage('Executing macro: %s %s\n' %
-                         (macro_name, ' '.join(self.macros[macro_name])))
-      self.debug_indent += 1
-    flag = self.ExecCommands(self.macros[macro_name])
-    if self.debug_mode:
-      self.debug_indent -= 1
+    self.PushVars(None)
+    try:
+      if self.debug_mode:
+        self._DebugMessage('Executing macro: %s %s\n' %
+                           (macro_name, ' '.join(self.macros[macro_name])))
+        self.debug_indent += 1
+      flag = self.ExecCommands(self.macros[macro_name])
+      if self.debug_mode:
+        self.debug_indent -= 1
+    finally:
+      self.PopVars(None)
+
     return flag
 
   def ListMacros(self, _):
@@ -1472,9 +1491,15 @@ MATCH_TABLE = [
 
     (('<varname>=', re.compile(r'^[a-zA-Z0-9_]+=$')),
      RPNCalc.SetVar, VR, 'Set a variable'),
+    (('<varname>!=', re.compile(r'^[a-zA-Z0-9_]+!=$')),
+     RPNCalc.UnsetVar, VR, 'Clear a variable'),
     (('$<varname>', re.compile(r'^\$[a-zA-Z0-9_]+$')),
      RPNCalc.GetVar, VR, 'Get the value of a set variable'),
     ('set', RPNCalc.DumpVars, VR, 'Show all defined variables'),
+    ('pushv', RPNCalc.PushVars, VR,
+     'Push all variable definitions to a dedicated stack.'),
+    ('popv', RPNCalc.PopVars, VR,
+     'Pop variables previously pushed by pushv.'),
 
     ('r', RPNCalc.Redo, UR, 'Redo last undo (only if it was last command)'),
     ('u', RPNCalc.Undo, UR, 'Undo to last [Enter] state'),

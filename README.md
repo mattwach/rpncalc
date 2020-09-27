@@ -415,27 +415,6 @@ operators 'X', 'C' and 'V'.  Note that 'V' completely overwrites the existing
 stack.  The 'X' operator is also useful for cleaning up miscellaneous values
 from a stack after a calculation.
 
-#### Examples:
-
-This example uses named variables.  The risks here are typical global variable
-risks, such as submacros using the same varible names or a macro wiping out
-a variable you assumed was safe:
-
-    m:quadratic1              \ # assume the stack contains a, b, c, in order
-      c= b= a=                \ # grab the variables
-      $b d * 4 $a $c * * - \ # w = b*b-4*a*c  stack is: w
-      sqrt $b -              \ # x = sqrt(w) - b
-      2 $a * /                 # x/2a completes the equation
-
-This mixup uses positional stack commands to keep the relevant variables on the
-stack instead.  This is safer but slightly more complex to implement
-
-    m:quadratic2                 \ # assume the stack contains a, b, c in order
-      1 pc v v *                 \ # grab b and push w=b*b, stack is a b c w
-      3 pc v 2 px v 4 * * - sqrt \ # Calculate x = sqrt(w - 4ac), stack is a b x
-      s -                        \ # calculate y=x-b, stact is a y
-      s 2 * /                      # y/2a completes the equation
-
 ### Supported Commands
 
     c                     Copy y
@@ -462,11 +441,49 @@ also dump the current set of defined variables for reference
                       # time
     set               # see what variables are currently defined
 
+You can also push and pop all definitions to a dedicated stack.  This is mostly
+useful in macro executions, but you can execute the commands manally too,
+as needed.
+
+#### Example:
+
+    |> 5 x= set
+    c               =  299792458.0
+    e               =  2.71828182846
+    pi              =  3.14159265359
+    x               =  5.0
+   
+    |> pushv
+
+    |> set
+    c               =  299792458.0
+    e               =  2.71828182846
+    pi              =  3.14159265359
+    x               =  5.0
+
+    |> 4 a= 6 x= set
+
+    a               =  4.0
+    c               =  299792458.0
+    e               =  2.71828182846
+    pi              =  3.14159265359
+    x               =  6.0
+   
+    |> popv set
+
+    c               =  299792458.0
+    e               =  2.71828182846
+    pi              =  3.14159265359
+    x               =  5.0
+
 ### Supported Commands
 
     <varname>=            Set a variable
+    <varname>!=           Clear a variable
     $<varname>            Get the value of a set variable
     set                   Show all defined variables
+    pushv                 Push all variable definitions to a dedicated stack.
+    popv                  Pop variables previously pushed by pushv.
 
 ## Undo/Redo
 
@@ -769,8 +786,7 @@ use the `l:c` command to list all known conversion types.
 Macros and conditionals allow for simple programming concepts to be implemented.
 The m: syntax is used to define a macro.  Later @macro can be used to execute
 it.  The stack is used for argument passing and return values for the most part,
-although you can also use the clipboard to hold variables.  Be aware that these
-variables are global though!
+although you can also use variables.
 
 For an example, let's first define a macro that can produce the next fibonacci
 number
@@ -801,6 +817,35 @@ As you can see, programming with this calculator is possible but complex
 implementations are beyond the current goals.
 
 Note that turning on debug mode can be a valuable aid in testing macros.
+
+#### Variables and macros
+
+Before a macro is executed, `rpncalc` automatically calls `pushv` and
+automatically calls `popv` upon exit.  This means that the macro can freely
+create variables without concern of overwriting existing variables.
+
+If you really want a macro to set a "global" variable, the trick
+is to `popv` to remove the backup copy, then `pushv`  before returning to
+ensure that the macro's stack it the one preserved.  
+
+    |> m:local 5 a= $a 4 +
+
+    |> m:global popv 5 b= $b 4 + pushv
+
+    |> @local set
+    c               =  299792458.0
+    e               =  2.71828182846
+    pi              =  3.14159265359
+    y = 9.0            
+
+    |> @global set
+    b               =  5.0
+    c               =  299792458.0
+    e               =  2.71828182846
+    pi              =  3.14159265359
+    x = 9.0            
+    y = 9.0    
+
 
 ### Conditionals
 
