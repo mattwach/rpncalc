@@ -33,7 +33,7 @@ sqrt(3 * 3 + 4 * 4).  A few different ways.
 
 Area of a circle of radius 5
 
-    |> 5 2 ** v:pi *
+    |> 5 2 ** $pi *
     y = 78.5398163397
 
 Complex Numbers
@@ -242,7 +242,7 @@ Sometimes the desired phase or the magnitude of the polar expression is already
 on the stack.  For phase, you can simply omit the angle from the expression and
 it will be pulled from the stack.
 
-    |> v:pi 2 /
+    |> $pi 2 /
     y = 1.57079632679  
        
     |> 5<
@@ -408,17 +408,17 @@ also 'cut' (pop) the last value on the stack to the clipboard with 'x'.
     |> v
     y = 6.0     
 
-### Variable Clipboard
+### Variables
 
-This clipboard allows you to cut copy and paste to variable names, you can
+You can set and retrieve the value of variables.  You can
 also dump the current set of defined variables for reference
 
 #### Examples:
 
-    now c:start_time   # copy the current time into 'start_time'
-    now v:start_time - # Find the delta between 'start_time' and the current
-                       # time
-    l:v                # see what variables are currently defined
+    now start_time=   # move the current time into 'start_time'
+    now $start_time - # Find the delta between 'start_time' and the current
+                      # time
+    set               # see what variables are currently defined
 
 ### Stack Clipboard
 
@@ -434,10 +434,10 @@ risks, such as submacros using the same varible names or a macro wiping out
 a variable you assumed was safe:
 
     m:quadratic1              \ # assume the stack contains a, b, c, in order
-      x:c x:b x:a             \ # grab the variables
-      v:b d * 4 v:a v:c * * - \ # w = b*b-4*a*c  stack is: w
-      sqrt v:b -              \ # x = sqrt(w) - b
-      2 v:a * /                 # x/2a completes the equation
+      c= b= a=                \ # grab the variables
+      $b d * 4 $a $c * * - \ # w = b*b-4*a*c  stack is: w
+      sqrt $b -              \ # x = sqrt(w) - b
+      2 $a * /                 # x/2a completes the equation
 
 This mixup uses positional stack commands to keep the relevant variables on the
 stack instead.  This is safer but slightly more complex to implement
@@ -456,10 +456,9 @@ stack instead.  This is safer but slightly more complex to implement
     pc                    Copy stack[y], where x is index 0
     px                    Cut stack[y], where x is index 0
     pv                    Paste (insert) at stack[y], where x is index 0
-    c:<varname>           Copy y to varname
-    x:<varname>           Cut y to varname
-    v:<varname>           paste varname to stack
-    l:v                   Show all defined variables
+    <varname>=            Set a variable
+    $<varname>            Get the value of a set variable
+    set                   Show all defined variables
     x                     Cut (Pop) y
     v                     Paste (Push) y
     C                     Copy stack
@@ -781,16 +780,16 @@ Now to complete the concept by defining fibonacci to set up the stack initially
 and `fib_test` and `fib_iter` helper macros to push the process along
 
     m:fibonacci   \
-        2 - x:i   \ # Subtract 2 from arg and push 
+        2 - i=   \ # Subtract 2 from arg and push 
         0 1       \ # Push the first 2 numbers in the series
         @fib_test   # kick off the iterator
 
     m:fib_test \
-        v:i 0 > ?fib_iter  # If iterator is not expired then make another digit
+        $i 0 > ?fib_iter  # If iterator is not expired then make another digit
 
     m:fib_iter      \
         @fib_next   \ # Make the digit
-        v:i 1 - x:i \ # Decrement the counter
+        $i 1 - i= \ # Decrement the counter
         @fib_test     # See if there is more to do
 
     15 @fibonacci # Generate the first 15 numbers

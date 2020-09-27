@@ -811,18 +811,13 @@ class RPNCalc(object):
       self.stack = []
     return True
 
-  def CopyVar(self, arg):
-    var_name = arg.split(':')[1]
-    self.var_dict[var_name] = self.stack[-1]
-    return False
-
-  def CutVar(self, arg):
-    var_name = arg.split(':')[1]
+  def SetVar(self, arg):
+    var_name = arg[:-1]
     self.var_dict[var_name] = self.stack.pop()
     return True
 
-  def PasteVar(self, arg):
-    var_name = arg.split(':')[1]
+  def GetVar(self, arg):
+    var_name = arg[1:]
     self.stack.append(self.var_dict[var_name])
     return True
 
@@ -1468,13 +1463,11 @@ MATCH_TABLE = [
     ('px', RPNCalc.PositionalCut, CB, 'Cut stack[y], where x is index 0'),
     ('pv', RPNCalc.PositionalPaste, CB,
      'Paste (insert) at stack[y], where x is index 0'),
-    (('c:<varname>', re.compile(r'^c:[a-zA-Z0-9_]+$')),
-     RPNCalc.CopyVar, CB, 'Copy y to varname'),
-    (('x:<varname>', re.compile(r'^x:[a-zA-Z0-9_]+$')),
-     RPNCalc.CutVar, CB, 'Cut y to varname'),
-    (('v:<varname>', re.compile(r'^v:[a-zA-Z0-9_]+$')),
-     RPNCalc.PasteVar, CB, 'paste varname to stack'),
-    ('l:v', RPNCalc.DumpVars, CB, 'Show all defined variables'),
+    (('<varname>=', re.compile(r'^[a-zA-Z0-9_]+=$')),
+     RPNCalc.SetVar, CB, 'Set a variable'),
+    (('$<varname>', re.compile(r'^\$[a-zA-Z0-9_]+$')),
+     RPNCalc.GetVar, CB, 'Get the value of a set variable'),
+    ('set', RPNCalc.DumpVars, CB, 'Show all defined variables'),
     ('x', RPNCalc.Cut, CB, 'Cut (Pop) y'),
     ('v', RPNCalc.Paste, CB, 'Paste (Push) y'),
     ('C', RPNCalc.CopyStack, CB, 'Copy stack'),

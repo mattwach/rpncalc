@@ -54,7 +54,7 @@ DATA = """
   I D 3 d * 4 d * + sqrt
   O y = 5.0 |>
 
-  I D 5 2 ** v:pi *
+  I D 5 2 ** $pi *
   O y = 78.5398163397 |>
 
   I D 1e6 2.5e-4
@@ -150,7 +150,7 @@ DATA = """
   I D 100 log10
   O y = 2.0 |>
 
-  I D v:e 5 ** log
+  I D $e 5 ** log
   O y = 5.0 |>
 
   I D 5 sq
@@ -574,22 +574,22 @@ DATA = """
 
 # --- Trig functions, in radians ---
 
-  I D normal v:pi 6 / sin
+  I D normal $pi 6 / sin
   O y = 0.5 |>
 
-  I D v:pi 3 / cos
+  I D $pi 3 / cos
   O y = 0.5 |>
 
-  I D v:pi 4 / tan
+  I D $pi 4 / tan
   O y = 1.0 |>
 
-  I D 1 asin v:pi 2 / -
+  I D 1 asin $pi 2 / -
   O y = 0.0 |>
 
-  I D 0 acos v:pi 2 / -
+  I D 0 acos $pi 2 / -
   O y = 0.0 |>
 
-  I D 1 atan v:pi 4 / -
+  I D 1 atan $pi 4 / -
   O y = 0.0 |>
 
   I D 1+i sin
@@ -676,27 +676,20 @@ DATA = """
   E While parsing pc: Not Enough Stack Arguments !!
   O y = 1.0 |>
 
-# --- Variable Clipboard ---
+# --- Variables ---
 
-  I D 1234 c:myvar 0 v:myvar
-  O 1234.0 x = 0.0 y = 1234.0 |>
-
-  I D 5678 x:myvar 0 v:myvar
+  I D 5678 myvar= 0 $myvar
   O x = 0.0 y = 5678.0 |>
 
-  I D l:v
+  I D set
   O c = 299792458.0 e = 2.71828182846 myvar = 5678.0 pi = 3.14159265359 |>
 
-  I D c:myvar
-  E While parsing c:myvar: Not Enough Stack Arguments !!
+  I D myvar=
+  E While parsing myvar=: Not Enough Stack Arguments !!
   O |>
 
-  I D x:myvar
-  E While parsing x:myvar: Not Enough Stack Arguments !!
-  O |>
-
-  I D v:foo
-  E While parsing v:foo: KeyError !!
+  I D $foo
+  E While parsing $foo: KeyError !!
   O |>
 
 # --- Full Stack Clipboard ---
@@ -799,7 +792,7 @@ DATA = """
   I rad
   O y = -3.67394039744e-16-6.0i | 6.0<-1.57079632679 |polar|>
 
-  I D v:pi 2 / 5<
+  I D $pi 2 / 5<
   O y = 3.06161699787e-16+5.0i | 5.0<1.57079632679 |polar|>
 
   I deg
