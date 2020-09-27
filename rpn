@@ -287,7 +287,7 @@ class RPNCalc(object):
   def DumpVars(self, _):
 
     for name in sorted(self.var_dict):
-      sys.stdout.write('%-15s =  %s\n' % (name, self.var_dict[name]))
+      self.DumpVar(name, self.var_dict[name])
 
     return False
 
