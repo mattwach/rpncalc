@@ -174,18 +174,6 @@ also 'cut' (pop) the last value on the stack to the clipboard with 'x'.
     |> v
     y = 6.0     
 
-### Variables
-
-You can set and retrieve the value of variables.  You can
-also dump the current set of defined variables for reference
-
-#### Examples:
-
-    now start_time=   # move the current time into 'start_time'
-    now $start_time - # Find the delta between 'start_time' and the current
-                      # time
-    set               # see what variables are currently defined
-
 ### Stack Clipboard
 
 You can also copy and paste the entire clipboard with the capitalized
@@ -213,6 +201,18 @@ stack instead.  This is safer but slightly more complex to implement
       3 pc v 2 px v 4 * * - sqrt \ # Calculate x = sqrt(w - 4ac), stack is a b x
       s -                        \ # calculate y=x-b, stact is a y
       s 2 * /                      # y/2a completes the equation
+"""
+
+DOCS['Variables'] = """
+You can set and retrieve the value of variables.  You can
+also dump the current set of defined variables for reference
+
+#### Examples:
+
+    now start_time=   # move the current time into 'start_time'
+    now $start_time - # Find the delta between 'start_time' and the current
+                      # time
+    set               # see what variables are currently defined
 """
 
 DOCS['Display Modes'] = """

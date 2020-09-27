@@ -408,18 +408,6 @@ also 'cut' (pop) the last value on the stack to the clipboard with 'x'.
     |> v
     y = 6.0     
 
-### Variables
-
-You can set and retrieve the value of variables.  You can
-also dump the current set of defined variables for reference
-
-#### Examples:
-
-    now start_time=   # move the current time into 'start_time'
-    now $start_time - # Find the delta between 'start_time' and the current
-                      # time
-    set               # see what variables are currently defined
-
 ### Stack Clipboard
 
 You can also copy and paste the entire clipboard with the capitalized
@@ -456,14 +444,29 @@ stack instead.  This is safer but slightly more complex to implement
     pc                    Copy stack[y], where x is index 0
     px                    Cut stack[y], where x is index 0
     pv                    Paste (insert) at stack[y], where x is index 0
-    <varname>=            Set a variable
-    $<varname>            Get the value of a set variable
-    set                   Show all defined variables
     x                     Cut (Pop) y
     v                     Paste (Push) y
     C                     Copy stack
     X                     Cut stack
     V                     Paste stack
+
+## Variables
+
+You can set and retrieve the value of variables.  You can
+also dump the current set of defined variables for reference
+
+#### Examples:
+
+    now start_time=   # move the current time into 'start_time'
+    now $start_time - # Find the delta between 'start_time' and the current
+                      # time
+    set               # see what variables are currently defined
+
+### Supported Commands
+
+    <varname>=            Set a variable
+    $<varname>            Get the value of a set variable
+    set                   Show all defined variables
 
 ## Undo/Redo
 

@@ -1359,6 +1359,7 @@ class RPNCalc(object):
 # The idea is to cleanly find the correct funtion to call for a given input
 
 CB = 'Clipboard'
+CM = 'Complex Numbers'
 DB = 'Expression Debugging'
 EX = 'Exiting'
 LO = 'Logical Operators'
@@ -1373,7 +1374,7 @@ ST = 'Statistics'
 TR = 'Trigonometry'
 TY = 'Type Conversion'
 UR = 'Undo/Redo'
-CM = 'Complex Numbers'
+VR = 'Variables'
 
 INT = '-?[0-9]+'
 FLOAT = r'-?([0-9]|\.)[0-9]*\.?[0-9]*e?-?[0-9]*'
@@ -1463,16 +1464,17 @@ MATCH_TABLE = [
     ('px', RPNCalc.PositionalCut, CB, 'Cut stack[y], where x is index 0'),
     ('pv', RPNCalc.PositionalPaste, CB,
      'Paste (insert) at stack[y], where x is index 0'),
-    (('<varname>=', re.compile(r'^[a-zA-Z0-9_]+=$')),
-     RPNCalc.SetVar, CB, 'Set a variable'),
-    (('$<varname>', re.compile(r'^\$[a-zA-Z0-9_]+$')),
-     RPNCalc.GetVar, CB, 'Get the value of a set variable'),
-    ('set', RPNCalc.DumpVars, CB, 'Show all defined variables'),
     ('x', RPNCalc.Cut, CB, 'Cut (Pop) y'),
     ('v', RPNCalc.Paste, CB, 'Paste (Push) y'),
     ('C', RPNCalc.CopyStack, CB, 'Copy stack'),
     ('X', RPNCalc.CutStack, CB, 'Cut stack'),
     ('V', RPNCalc.PasteStack, CB, 'Paste stack'),
+
+    (('<varname>=', re.compile(r'^[a-zA-Z0-9_]+=$')),
+     RPNCalc.SetVar, VR, 'Set a variable'),
+    (('$<varname>', re.compile(r'^\$[a-zA-Z0-9_]+$')),
+     RPNCalc.GetVar, VR, 'Get the value of a set variable'),
+    ('set', RPNCalc.DumpVars, VR, 'Show all defined variables'),
 
     ('r', RPNCalc.Redo, UR, 'Redo last undo (only if it was last command)'),
     ('u', RPNCalc.Undo, UR, 'Undo to last [Enter] state'),
