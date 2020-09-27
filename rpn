@@ -332,9 +332,15 @@ class RPNCalc(object):
       self.display_mode_str = 'polar'
     return True
 
+  def SigPolarMode(self, arg):
+    if arg or not self.manual_mode:
+      self.FixedPolarMode(arg)
+      self.display_mode = RPNCalc._SigPolarMode
+      self.display_mode_str = 'sigpolar%d' % self.fixed_places
+
   def FixedPolarMode(self, arg):
     if arg or not self.manual_mode:
-      self._SetFixedMode(int(self.stack.pop()), True)
+      self._SetFixedMode(int(self.stack.pop()), True, 1)
       self.display_mode = RPNCalc._FixedPolarMode
       self.display_mode_str = 'fixedpolar%d' % self.fixed_places
     return True
@@ -378,12 +384,19 @@ class RPNCalc(object):
 
   def FixedMode(self, arg):
     if arg or not self.manual_mode:
-      self._SetFixedMode(int(self.stack.pop()), True)
+      self._SetFixedMode(int(self.stack.pop()), True, 0)
     return True
 
-  def _SetFixedMode(self, amount, force):
+  def SigMode(self, arg):
+    if arg or not self.manual_mode:
+      self._SetFixedMode(int(self.stack.pop()), True, 1)
+      self.display_mode = RPNCalc._SigMode
+      self.display_mode_str = 'sig%d' % self.fixed_places
+    return True
+
+  def _SetFixedMode(self, amount, force, min_amount):
     if force:
-      if amount < 0 or amount > 20:
+      if amount < min_amount or amount > 20:
         raise FixedModeValueOutOfRangeError(
             'Fixed Mode: value out of range: %d' % amount)
       self.display_mode = RPNCalc._FixedMode
@@ -398,11 +411,13 @@ class RPNCalc(object):
 
   def DegreeMode(self, _):
     self.degree_mode = True
-    return self.display_mode in (RPNCalc._PolarMode, RPNCalc._FixedPolarMode)
+    return self.display_mode in (
+        RPNCalc._PolarMode, RPNCalc._FixedPolarMode, RPNCalc._SigPolarMode)
 
   def RadianMode(self, _):
     self.degree_mode = False
-    return self.display_mode in (RPNCalc._PolarMode, RPNCalc._FixedPolarMode)
+    return self.display_mode in (
+        RPNCalc._PolarMode, RPNCalc._FixedPolarMode, RPNCalc._SigPolarMode)
 
   def DebugMode(self, _):
     self.debug_mode = True
@@ -484,7 +499,8 @@ class RPNCalc(object):
       angle = math.radians(angle)
 
     self.stack.append(complex(mag * math.cos(angle), mag * math.sin(angle)))
-    if self.display_mode != RPNCalc._FixedPolarMode:
+    if self.display_mode not in (
+        RPNCalc._FixedPolarMode, RPNCalc._SigPolarMode):
       self.PolarMode(None)
     return True
 
@@ -933,7 +949,7 @@ class RPNCalc(object):
     return True
 
   def Convert(self, arg):
-    self._SetFixedMode(3, False)
+    self._SetFixedMode(3, False, 0)
     y = self.stack.pop()
     y_type, target_type = arg.split('>')
     converted = self.conversion.Convert(y, y_type, target_type)
@@ -1175,21 +1191,41 @@ class RPNCalc(object):
     if isinstance(value, complex):
       letter = 'j' if this.imagj else 'i'
       if value.real == 0:
-        format_str = '%.{fp}f{letter}'.format(
-            fp=this.fixed_places,
-            letter=letter
-        )
-        return format_str % value.imag
+        return RPNCalc._FixedMode(this, value.imag) + letter
 
-      format_str = '%.{fp}f{sign}%.{fp}f{letter}'.format(
-          fp=this.fixed_places,
-          sign='+' if value.imag >= 0 else '',
-          letter=letter
-      )
-      return format_str % (value.real, value.imag)
+      return '%s%s%s%s' % (
+          RPNCalc._FixedMode(this, value.real),
+          '+' if value.imag >= 0 else '',
+          RPNCalc._FixedMode(this, value.imag),
+          letter)
 
     format_str = '%.{fp}f'.format(fp=this.fixed_places)
     return format_str % value
+
+  @staticmethod
+  def _SigMode(this, value):
+    if isinstance(value, complex):
+      letter = 'j' if this.imagj else 'i'
+      imag_str = RPNCalc._SigMode(this, value.imag)
+      if imag_str == '1':
+        imag_str = ''
+      elif imag_str == '-1':
+        imag_str = '-'
+
+      if value.real == 0:
+        return imag_str + letter
+
+      return '%s%s%s%s' % (
+          RPNCalc._SigMode(this, value.real),
+          '+' if value.imag >= 0 else '',
+          imag_str,
+          letter)
+
+    sig_value = float('%.{fp}g'.format(fp=this.fixed_places) % value)
+    sig_str = str(sig_value)
+    if sig_str.endswith('.0'):
+      sig_str = sig_str[:-2]
+    return sig_str
 
   @staticmethod
   def _HexMode(_, value):
@@ -1232,6 +1268,19 @@ class RPNCalc(object):
     return '%s<%s' % (
         RPNCalc._FixedMode(this, mag),
         RPNCalc._FixedMode(this, phase))
+
+  @staticmethod
+  def _SigPolarMode(this, value):
+    if not isinstance(value, complex):
+      return RPNCalc._SigMode(this, value)
+
+    mag, phase = cmath.polar(value)
+    if this.degree_mode:
+      phase = math.degrees(phase)
+
+    return '%s<%s' % (
+        RPNCalc._SigMode(this, mag),
+        RPNCalc._SigMode(this, phase))
 
   @staticmethod
   def _BinMode(_, value):
@@ -1448,9 +1497,13 @@ MATCH_TABLE = [
     ('median', RPNCalc.Median, ST, 'Median All Arguments'),
 
     ('fixed', RPNCalc.FixedMode, MO,
-     'Turn on fixed-width mode (y holds sig digits)'),
+     'Turn on fixed-width mode (y holds post . digit count)'),
+    ('sig', RPNCalc.SigMode, MO,
+     'Turn on significant digit mode (y holds post sig digit count)'),
     ('fixedpolar', RPNCalc.FixedPolarMode, MO,
-     'Turn on fixed-width polar mode (y holds sig digits)'),
+     'Turn on fixed-width polar mode (y holds post . digit count)'),
+    ('sigpolar', RPNCalc.SigPolarMode, MO,
+     'Turn on significant digit polar mode (y holds sig digit count)'),
     ('polar', RPNCalc.PolarMode, MO, 'Turn on polar mode'),
     ('hex', RPNCalc.HexMode, MO, 'Turn on hexadecimal display'),
     ('bin', RPNCalc.BinaryMode, MO, 'Turn on binary display'),
@@ -1495,7 +1548,7 @@ MATCH_TABLE = [
     (('1<, -2.6<', re.compile(
         r'^%s<$' % FLOAT)),
      RPNCalc.PushComplexPolarPhaseOnStack, CM,
-       'Complex numbers in polar form (pull phase from stack)'),
+     'Complex numbers in polar form (pull phase from stack)'),
     (('1<3.14, -2.6<-45.5', re.compile(
         r'{fl}<{fl}$'.format(fl=FLOAT))),
      RPNCalc.PushComplexPolar, CM, 'Complex numbers in polar form'),

@@ -277,10 +277,14 @@ the imaginary part:
     y = 12.345+34.567i  | 0x0C
 
 There is also a `fixedpolar` display mode that displays polar results with a fixed
-number of digits.
+number of digits after the `.` and `sigpolar` that limits the number of significant
+digits.
 
     |> 1+i deg 3 fixedpolar
     y = 1.0+1.0i        | 1.414<45.000
+
+    |> 3 sigpolar
+    y = 1.0+1.0i        | 1.41<45
 
 Functions are also provided to extract the real, imaginary, magnitude and angle:
 
@@ -530,11 +534,17 @@ format, like this:
 There are, however, a number of optional display modes available that  also
 show the data in a converted format.  Here is the basic catalogue:
 
-    3 fixed # Fixed Mode (variable number of digits):
+    3 fixed # Fixed Mode (fixed number of digits after the .):
 
     10.0  42.0
     x = 1234.0          | 1234.000
     y = 3.14159265359   | 3.142
+
+    3 sig # Significant Mode (limit significant digits):
+
+    10.0  42.0
+    x = 1234.0          | 1230
+    y = 3.14159265359   | 3.14
 
     hex # Hexidecimal
 
@@ -645,8 +655,10 @@ interactive is the interactive default.
 
 ### Supported Commands
 
-    fixed                 Turn on fixed-width mode (y holds sig digits)
-    fixedpolar            Turn on fixed-width polar mode (y holds sig digits)
+    fixed                 Turn on fixed-width mode (y holds post . digit count)
+    sig                   Turn on significant digit mode (y holds post sig digit count)
+    fixedpolar            Turn on fixed-width polar mode (y holds post . digit count)
+    sigpolar              Turn on significant digit polar mode (y holds sig digit count)
     polar                 Turn on polar mode
     hex                   Turn on hexadecimal display
     bin                   Turn on binary display
