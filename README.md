@@ -117,10 +117,71 @@ support
 
 Automate and simplify complex and repetitive tasks
 
-## Batch and Interactive Modes
+## Sketch, Batch and Interactive modes.
 
-Supports easy piping of results when run with arguments and an interactive
-mode when run without arguments.
+`rpncalc` has three interface modes: `sketch`, `interactive`, and `batch`.  You
+can switch between them by typing the associated commands.
+
+That said, it's usually not necessary to issue these commands as `interactive`
+is the default mode when running from a tty and `sketch` is th default mode
+when piping in a file.
+
+`sketch` mode carefully formats the output so that it can be fed back into
+itself.  For example:
+
+    cat sketch_input_example.txt | ./rpn > sketch_output_example.txt
+    cat skecth_output_example.txt | ./rpn
+
+The above works but it not too useful as-is, but there is potential to
+make it useful.  One example that's quite useful is using `vim` with `rpncalc`
+sketch mode.  The basic recipe is.
+
+Open `vim`
+
+    vim
+
+Enter some commands in the editor, using # for comments
+
+    2 fixed # 2 digits fixed mode.
+
+    # set the radius
+    5 r=
+
+    # circle area
+    $pi $r $r * *
+
+    # circle diameter
+    D $r 2 *
+
+    # circle circumference
+    2 $pi $r * *
+
+In `vim`, make sure `rpn` is in your `$PATH' and enter `:%!rpn`.  The text
+above will be replaced with
+
+    2 fixed # 2 digits fixed mode.
+
+    # set the radius
+    5 r=
+    #>  r = 5.0             | 5.00
+
+    # circle area
+    $pi $r $r * *
+    #>  y = 78.5398163397   | 78.54
+
+    # circle diameter
+    D $r 2 *
+    #>  y = 10.0            | 10.00
+
+    # circle circumference
+    2 $pi $r * *
+    #>  x = 10.0            | 10.00
+    #>  y = 31.4159265359   | 31.42
+
+Now you can change the file as you like, for example, changing the radius
+value, and enter `:%!rpn` again to recalculate all the fields that start
+with `#>`.  In `vim`, `:` followed by up-arrow is another way.
+    
 
 
 # Detailed Documentation

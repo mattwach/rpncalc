@@ -1,0 +1,17 @@
+2 fixed # 2 digits fixed mode.
+
+# set the radius
+5 r=
+
+# circle area
+$pi $r $r * *
+
+# circle diameter
+D $r 2 *
+
+# circle circumference
+2 $pi $r * *
+
+# Make an error on purpose
+D +
+

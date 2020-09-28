@@ -19,3 +19,5 @@ CHANGED_FILES=$(git status -s | grep -e '[rpn|\.py]$' | awk '{ print $2 }' || tr
 [[ -z "$CHANGED_FILES" ]] || pylint $CHANGED_FILES
 python io_test.py
 
+cat sketch_input_sample.txt | ./rpn > /tmp/sketch_output_sample.txt 2>&1
+diff sketch_output_sample.txt /tmp/sketch_output_sample.txt

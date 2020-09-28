@@ -95,6 +95,7 @@ class RPNCalc(object):
     self.line_buffer = []
     self.last_command = ''
     self.reraise = False
+    self.saw_a_blank_line = False
 
     if sys.stdin.isatty():
       self.interface_mode = INTERACTIVE_MODE
@@ -125,10 +126,13 @@ class RPNCalc(object):
   def ParseLine(self, sub_line, interactive):
     if self.interface_mode == SKETCH_MODE:
       if not sub_line or sub_line.startswith(SKETCH_OUTPUT_MARKER):
+        if not sub_line and not self.saw_a_blank_line:
+          self.saw_a_blank_line = True
+          sys.stdout.write('\n')
         return False
+      self.saw_a_blank_line = False
       sys.stdout.write(sub_line)
-      if sub_line.lstrip()[0] == '#':
-        sys.stdout.write('\n')
+      sys.stdout.write('\n')
       sys.stdout.flush()
 
     if interactive and (not sub_line) and (not self.line_buffer):
@@ -169,7 +173,7 @@ class RPNCalc(object):
           autodump_stack = True
         if atom == '.' or atom == '..':
           autodump_stack = False
-        self._DebugMessage('Exec: %s' % atom)
+        self._DebugMessage('Exec: %s\n' % atom)
       if self.debug_mode:
         sys.stdout.write('\n')
     except Error as e:
@@ -256,8 +260,6 @@ class RPNCalc(object):
         if self.stack:
           self.DumpVar(None, self.stack[-1])
       else:
-        sys.stdout.write('\n')
-
         if len(self.stack) > 2:
           if self.interface_mode == SKETCH_MODE:
             sys.stdout.write('# ')
@@ -283,7 +285,6 @@ class RPNCalc(object):
 
   def DumpStateLong(self, _=None):
     try:
-      sys.stdout.write('\n')
       for index, var in enumerate(self.stack):
         self.DumpVar('s%d' % (len(self.stack) - index), var)
     except TypeError as e:

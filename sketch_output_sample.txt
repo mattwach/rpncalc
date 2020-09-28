@@ -1,0 +1,25 @@
+2 fixed # 2 digits fixed mode.
+
+# set the radius
+5 r=
+#>  r = 5.0             | 5.00
+
+# circle area
+$pi $r $r * *
+#>  y = 78.5398163397   | 78.54
+
+# circle diameter
+D $r 2 *
+#>  y = 10.0            | 10.00
+
+# circle circumference
+2 $pi $r * *
+#>  x = 10.0            | 10.00
+#>  y = 31.4159265359   | 31.42
+
+# Make an error on purpose
+D +
+
+#>  While parsing +: Not Enough Stack Arguments !!
+
+
