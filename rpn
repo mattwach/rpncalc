@@ -65,6 +65,8 @@ INTERACTIVE_MODE = 0
 BATCH_MODE = 1
 SKETCH_MODE = 2
 
+SKETCH_OUTPUT_MARKER = '#>  '
+
 #
 # RPNCalc Class
 #
@@ -122,11 +124,12 @@ class RPNCalc(object):
 
   def ParseLine(self, sub_line, interactive):
     if self.interface_mode == SKETCH_MODE:
-      if not sub_line or sub_line.startswith('|> '):
+      if not sub_line or sub_line.startswith(SKETCH_OUTPUT_MARKER):
         return False
       sys.stdout.write(sub_line)
       if sub_line.lstrip()[0] == '#':
         sys.stdout.write('\n')
+      sys.stdout.flush()
 
     if interactive and (not sub_line) and (not self.line_buffer):
       sub_line = self.last_command
@@ -236,12 +239,14 @@ class RPNCalc(object):
     return stack_changed
 
   def DumpError(self, msg, atom):
-
     sys.stderr.write('\n')
+    if self.interface_mode == SKETCH_MODE:
+      sys.stderr.write(SKETCH_OUTPUT_MARKER)
+
     if atom:
-      sys.stderr.write('While parsing %s:\n  ' % atom)
+      sys.stderr.write('While parsing %s: ' % atom)
     sys.stderr.write(msg)
-    sys.stderr.write('\n!!\n')
+    sys.stderr.write(' !!\n')
     sys.stderr.flush()
 
   def DumpState(self, _=None):
@@ -286,7 +291,7 @@ class RPNCalc(object):
 
   def DumpVar(self, label, value):
     if self.interface_mode == SKETCH_MODE:
-      sys.stdout.write('|> ')
+      sys.stdout.write(SKETCH_OUTPUT_MARKER)
 
     if not label:
       sys.stdout.write('%s' % self.display_mode(self, value))
