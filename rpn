@@ -823,6 +823,7 @@ class RPNCalc(object):
   def SetVar(self, arg):
     var_name = arg[:-1]
     self.var_dict[var_name] = self.stack.pop()
+    self.DumpVar(var_name, self.var_dict[var_name])
     return True
 
   def UnsetVar(self, arg):
