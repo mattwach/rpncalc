@@ -132,7 +132,7 @@ itself.  For example:
     cat sketch_input_example.txt | ./rpn > sketch_output_example.txt
     cat skecth_output_example.txt | ./rpn
 
-The above works but it not too useful as-is, but there is potential to
+The above may not seem useful as-is, but there is potential to
 make it useful.  One example that's quite useful is using `vim` with `rpncalc`
 sketch mode.  The basic recipe is.
 
@@ -156,7 +156,7 @@ Enter some commands in the editor, using # for comments
     # circle circumference
     2 $pi $r * *
 
-In `vim`, make sure `rpn` is in your `$PATH' and enter `:%!rpn`.  The text
+In `vim`, make sure `rpn` is in your `$PATH` and enter `:%!rpn`.  The text
 above will be replaced with
 
     2 fixed # 2 digits fixed mode.
@@ -180,7 +180,11 @@ above will be replaced with
 
 Now you can change the file as you like, for example, changing the radius
 value, and enter `:%!rpn` again to recalculate all the fields that start
-with `#>`.  In `vim`, `:` followed by up-arrow is another way.
+with `#>`.
+
+What about `batch` mode? That mode only prints the bottom of the stack,
+no inputs.  It's mainly intended to make `rpncalc` easier to use in
+bash pipelines.
     
 
 

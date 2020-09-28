@@ -1163,17 +1163,9 @@ DATA = """
   I auto D 0x80
   O y = 128 | 0x80 |hex|mix|>
 
-# --- Batch and interactive modes ---
-
-  I normal nomix D batch 4 5 +
-  O 9.0 |>
-
-  I interactive .
-  O y = 9.0 |>
-
 # --- Expression Debugging ---
 
-  I D debug 4 5 +
+  I normal nomix D debug 4 5 +
   O Exec: debug Exec: 4 y = 4.0 Exec: 5 x = 4.0 y = 5.0 Exec: + y = 9.0 |debug|>
   
   I nodebug

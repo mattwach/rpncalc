@@ -103,7 +103,7 @@ class RPNCalc(object):
       self.interface_mode = SKETCH_MODE
 
   def MakePrompt(self):
-    if self.interface_mode == SKETCH_MODE:
+    if self.interface_mode != INTERACTIVE_MODE:
       return ''
 
     if self.line_buffer:
@@ -125,7 +125,7 @@ class RPNCalc(object):
 
   def ParseLine(self, sub_line, interactive):
     if self.interface_mode == SKETCH_MODE:
-      if not sub_line or sub_line.startswith(SKETCH_OUTPUT_MARKER):
+      if not sub_line.strip() or sub_line.startswith(SKETCH_OUTPUT_MARKER):
         if not sub_line and not self.saw_a_blank_line:
           self.saw_a_blank_line = True
           sys.stdout.write('\n')
@@ -134,6 +134,9 @@ class RPNCalc(object):
       sys.stdout.write(sub_line)
       sys.stdout.write('\n')
       sys.stdout.flush()
+
+    if self.interface_mode == BATCH_MODE and not sub_line.strip():
+      return False
 
     if interactive and (not sub_line) and (not self.line_buffer):
       sub_line = self.last_command
@@ -854,7 +857,8 @@ class RPNCalc(object):
   def SetVar(self, arg):
     var_name = arg[:-1]
     self.var_dict[var_name] = self.stack.pop()
-    self.DumpVar(var_name, self.var_dict[var_name])
+    if self.interface_mode != BATCH_MODE:
+      self.DumpVar(var_name, self.var_dict[var_name])
     return True
 
   def UnsetVar(self, arg):

@@ -5,7 +5,8 @@
 #>  r = 5.0             | 5.00
 
 # circle area
-$pi $r $r * *
+$pi $r \
+$r * *
 #>  y = 78.5398163397   | 78.54
 
 # circle diameter

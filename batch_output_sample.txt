@@ -1,0 +1,7 @@
+batch
+78.5398163397
+10.000
+31.416
+
+While parsing +: Not Enough Stack Arguments !!
+
