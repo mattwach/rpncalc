@@ -28,6 +28,9 @@ logging.basicConfig(level=logging.INFO)
 #   O : Expect this data to be returned
 FIRST_DATA_LINE = inspect.currentframe().f_lineno + 1
 DATA = """
+  I interactive
+  O interactive |>
+
 # --- Basic tests ---
 
   I 5
@@ -1163,7 +1166,7 @@ DATA = """
 # --- Batch and interactive modes ---
 
   I normal nomix D batch 4 5 +
-  O 9.0 |batch|>
+  O 9.0 |>
 
   I interactive .
   O y = 9.0 |>
@@ -1448,7 +1451,6 @@ def main():
       stdout=subprocess.PIPE,
       stderr=subprocess.PIPE)
 
-  get_output(p.stdout)
   tests_passed = 0
   tests_failed = 0
 

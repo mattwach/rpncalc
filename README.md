@@ -688,6 +688,7 @@ interactive is the interactive default.
     cent                  Turn on Cent-Wise Money Display mode
     normal                Turn off special display modes
     batch                 Only output formatted results
+    sketch                Output results in a form that can be reissued
     interactive           Show interactive stack dump
     manual                Do not automatically change display modes
     auto                  Automatically change display modes based on input syntax (default)

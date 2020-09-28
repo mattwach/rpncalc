@@ -60,6 +60,11 @@ BUILTIN_VARS = {
     'c': 299792458.0, # speed of light
 }
 
+# Interface Modes
+INTERACTIVE_MODE = 0
+BATCH_MODE = 1
+SKETCH_MODE = 2
+
 #
 # RPNCalc Class
 #
@@ -70,7 +75,6 @@ class RPNCalc(object):
     self.stack = []
     self.undo_history = []
     self.redo_history = []
-    self.batch_display = False
     self.display_mode = RPNCalc._NormalMode
     self.manual_mode = False
     self.display_mode_str = None
@@ -90,7 +94,15 @@ class RPNCalc(object):
     self.last_command = ''
     self.reraise = False
 
+    if sys.stdin.isatty():
+      self.interface_mode = INTERACTIVE_MODE
+    else:
+      self.interface_mode = SKETCH_MODE
+
   def MakePrompt(self):
+    if self.interface_mode == SKETCH_MODE:
+      return ''
+
     if self.line_buffer:
       prompt = ['... ']
     else:
@@ -105,12 +117,16 @@ class RPNCalc(object):
         prompt.append('debug')
       if self.manual_mode:
         prompt.append('manual')
-      if self.batch_display:
-        prompt.append('batch')
       prompt.append('> ')
     return '|'.join(prompt)
 
   def ParseLine(self, sub_line, interactive):
+    if self.interface_mode == SKETCH_MODE:
+      if not sub_line or sub_line.startswith('|> '):
+        return False
+      sys.stdout.write(sub_line)
+      if sub_line.lstrip()[0] == '#':
+        sys.stdout.write('\n')
 
     if interactive and (not sub_line) and (not self.line_buffer):
       sub_line = self.last_command
@@ -231,14 +247,16 @@ class RPNCalc(object):
   def DumpState(self, _=None):
 
     try:
-      if self.batch_display:
+      if self.interface_mode == BATCH_MODE:
         if self.stack:
           self.DumpVar(None, self.stack[-1])
       else:
-        prefix = '  ' * self.debug_indent
-
         sys.stdout.write('\n')
+
         if len(self.stack) > 2:
+          if self.interface_mode == SKETCH_MODE:
+            sys.stdout.write('# ')
+          prefix = '  ' * self.debug_indent
           sys.stdout.write(prefix)
         if len(self.stack) > MAX_STACK_ARGS:
           sys.stdout.write('...  ')
@@ -267,6 +285,8 @@ class RPNCalc(object):
       sys.stdout.write('\nTypeError: %s\n' % e)
 
   def DumpVar(self, label, value):
+    if self.interface_mode == SKETCH_MODE:
+      sys.stdout.write('|> ')
 
     if not label:
       sys.stdout.write('%s' % self.display_mode(self, value))
@@ -321,11 +341,16 @@ class RPNCalc(object):
   #
 
   def BatchMode(self, _=None):
-    self.batch_display = True
+    self.interface_mode = BATCH_MODE
     return False
 
   def InteractiveMode(self, _=None):
-    self.batch_display = False
+    self.interface_mode = INTERACTIVE_MODE
+    return False
+
+  def SketchMode(self, _=None):
+    self.interface_mode = SKETCH_MODE
+    sys.stdout.write('sketch\n')
     return False
 
   def HexMode(self, arg):
@@ -1536,6 +1561,8 @@ MATCH_TABLE = [
     ('cent', RPNCalc.CentMode, MO, 'Turn on Cent-Wise Money Display mode'),
     ('normal', RPNCalc.NormalMode, MO, 'Turn off special display modes'),
     ('batch', RPNCalc.BatchMode, MO, 'Only output formatted results'),
+    ('sketch', RPNCalc.SketchMode, MO,
+     'Output results in a form that can be reissued'),
     ('interactive', RPNCalc.InteractiveMode, MO, 'Show interactive stack dump'),
     ('manual', RPNCalc.ManualMode, MO,
      'Do not automatically change display modes'),
@@ -1587,7 +1614,8 @@ MAX_HELP_LINE_LENGTH = 80
 # main loop
 
 def main(rpn_calc=None):
-  sys.stdout.write('Try ? for help\n')
+  if sys.stdin.isatty():
+    sys.stdout.write('Try ? for help\n')
 
   histfile = os.path.join(os.path.expanduser("~"), ".rpnhist")
   try:
