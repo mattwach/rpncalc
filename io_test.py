@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 """Runs IO tests on RPN."""
 
 import inspect
@@ -1220,7 +1220,7 @@ DATA = """
   O |>
 
   I l:m
-  O pyth | 2 ** s 2 ** + sqrt |>
+  O pyth | 2 ** s 2 ** + sqrt q | q |>
 
   I m:local 5 a=
   O |>
@@ -1341,6 +1341,9 @@ class Error(Exception):
   pass
 
 
+class NoDataError(Exception):
+  pass
+
 class MaxLinesError(Error):
   pass
 
@@ -1425,7 +1428,8 @@ def parse_line(line_number, line, p):
     p.stdin.write(' '.join(tokens[1:]))
     p.stdin.write('\n')
     return 0
-  elif cmd == 'O':
+
+  if cmd == 'O':
     compare_output(line_number, tokens[1:], get_output(p.stdout))
   elif cmd == 'E':
     compare_output(line_number, tokens[1:], get_output(p.stderr))
@@ -1438,7 +1442,7 @@ def parse_line(line_number, line, p):
 
 def main():
   p = subprocess.Popen(
-      ['python', '-u', 'rpn'],
+      ['python2', '-u', 'rpn'],
       stdin=subprocess.PIPE,
       stdout=subprocess.PIPE,
       stderr=subprocess.PIPE)
