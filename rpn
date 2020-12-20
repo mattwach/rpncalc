@@ -91,7 +91,7 @@ class RPNCalc(object):
     self.debug_mode = False
     self.debug_indent = 0
     self.conversion = conversion.Conversion()
-    self.macros = {}
+    self.macros = {'q': ['q']}
     self.line_buffer = []
     self.last_command = ''
     self.reraise = False
