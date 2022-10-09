@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 # RPN calculator that supports time based maths and other goodies
 #
 # By: Matt Wachowski
@@ -71,7 +71,7 @@ SKETCH_OUTPUT_MARKER = '#>  '
 # RPNCalc Class
 #
 
-class RPNCalc(object):
+class RPNCalc:
 
   def __init__(self):
     self.stack = []
@@ -148,19 +148,19 @@ class RPNCalc(object):
     if sub_line.endswith('\\'):
       self.line_buffer.append(sub_line[:-1])
       return False
+
+    self.line_buffer.append(sub_line)
+    line = ' '.join(self.line_buffer)
+    if interactive:
+      self.last_command = line
+    self.line_buffer = []
+
+    if line.startswith('m:'):
+      command_list = [line]
     else:
-      self.line_buffer.append(sub_line)
-      line = ' '.join(self.line_buffer)
-      if interactive:
-        self.last_command = line
-      self.line_buffer = []
+      command_list = line.split()
 
-      if line.startswith('m:'):
-        command_list = [line]
-      else:
-        command_list = line.split()
-
-      return self.ExecCommands(command_list)
+    return self.ExecCommands(command_list)
 
   def ExecCommands(self, command_list):
     autodump_stack = False
@@ -174,7 +174,7 @@ class RPNCalc(object):
           self.DumpState()
         if self.Parse(atom):
           autodump_stack = True
-        if atom == '.' or atom == '..':
+        if atom in ('.', '..'):
           autodump_stack = False
         self._DebugMessage('Exec: %s\n' % atom)
       if self.debug_mode:
@@ -218,7 +218,7 @@ class RPNCalc(object):
   def Parse(self, arg):
     stack_changed = False
 
-    if arg != 'u' and arg != 'r':
+    if arg not in ('u', 'r'):
       self.redo_history = []
 
     for match, callback, _, _ in MATCH_TABLE:
@@ -691,7 +691,7 @@ class RPNCalc(object):
 
   def Factorial(self, _):
     y = self.stack.pop()
-    self.stack.append(math.factorial(y))
+    self.stack.append(math.factorial(int(y)))
     return True
 
   def Inverse(self, _):
@@ -892,7 +892,7 @@ class RPNCalc(object):
     l = self.stack
     self.stack = []
     l.sort()
-    self.stack.append(l[len(l) / 2])
+    self.stack.append(l[len(l) // 2])
     return True
 
   def Log(self, _):
@@ -1109,12 +1109,12 @@ class RPNCalc(object):
     if self.debug_mode:
       self._DebugMessage('Sourcing File: %s\n' % arg[2:])
       self.debug_indent += 1
-    filename = open(arg[2:], 'r')
-    for line in filename:
-      if self.ParseLine(line, False):
-        flag = True
-    if self.debug_mode:
-      self.debug_indent -= 1
+    with open(arg[2:], 'r', encoding='utf8') as fin:
+      for line in fin:
+        if self.ParseLine(line, False):
+          flag = True
+      if self.debug_mode:
+        self.debug_indent -= 1
     return flag
 
   #
@@ -1203,13 +1203,11 @@ class RPNCalc(object):
     return True
 
   def _CheckDurationMode(self):
-    if ((self.display_mode != RPNCalc._TimeMode) and
-        (self.display_mode != RPNCalc._DurationMode)):
+    if self.display_mode not in (RPNCalc._TimeMode, RPNCalc._DurationMode):
       self.DurationMode(None)
 
   def _CheckTimeMode(self):
-    if ((self.display_mode != RPNCalc._TimeMode) and
-        (self.display_mode != RPNCalc._DateMode)):
+    if self.display_mode not in (RPNCalc._TimeMode, RPNCalc._DateMode):
       self.TimeMode(None)
 
   def _DebugMessage(self, msg):
@@ -1283,9 +1281,9 @@ class RPNCalc(object):
       value = value.real
 
     if value >= 0:
-      ret = '%X' % value
+      ret = '%X' % int(value)
     else:
-      ret = '%X' % (0-value)
+      ret = '%X' % int(0-value)
 
     if len(ret) & 1:
       ret = '0' + ret
@@ -1646,7 +1644,7 @@ def main(rpn_calc=None):
 
     try:
       sys.stdout.flush()
-      line = raw_input(rpn_calc.MakePrompt())
+      line = input(rpn_calc.MakePrompt())
     except EOFError:
       sys.stdout.write('\n')
       sys.exit(0)

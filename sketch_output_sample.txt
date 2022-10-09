@@ -7,7 +7,7 @@
 # circle area
 $pi $r \
 $r * *
-#>  y = 78.5398163397   | 78.54
+#>  y = 78.53981633974483 | 78.54
 
 # circle diameter
 D $r 2 *
@@ -16,7 +16,7 @@ D $r 2 *
 # circle circumference
 2 $pi $r * *
 #>  x = 10.0            | 10.00
-#>  y = 31.4159265359   | 31.42
+#>  y = 31.41592653589793 | 31.42
 
 # Make an error on purpose
 D +

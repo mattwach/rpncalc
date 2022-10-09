@@ -211,7 +211,7 @@ class IncompatibleConversionTypes(Error):
     Error.__init__(self, '%s -> %s' % (source_type, target_type))
 
 
-class Conversion(object):
+class Conversion:
 
   def __init__(self):
     self.convert_dict = {}
@@ -275,22 +275,20 @@ class Conversion(object):
     return value
 
   def _ScaleUp(self, value, scale_factor):
-    if type(scale_factor) is tuple:
+    if isinstance(scale_factor, tuple):
       return (value + scale_factor[1]) * scale_factor[0]
-    else:
-      return value * scale_factor
+    return value * scale_factor
 
   def _ScaleDown(self, value, scale_factor):
-    if type(scale_factor) is tuple:
+    if isinstance(scale_factor, tuple):
       return (value / scale_factor[0]) - scale_factor[1]
-    else:
-      return value / scale_factor
+    return value / scale_factor
 
   def DumpHelp(self):
 
     classes = {}
 
-    for conversion_name, conversion in self.convert_dict.iteritems():
+    for conversion_name, conversion in self.convert_dict.items():
       if conversion.class_name not in classes:
         classes[conversion.class_name] = []
       classes[conversion.class_name].append(conversion_name)
@@ -386,7 +384,7 @@ class Conversion(object):
         self.convert_dict[key] = ConversionType(class_name, scale_factor)
 
 
-class ConversionData(object):
+class ConversionData:
 
   def __init__(self, numerator, denominator):
     """Constructor.
@@ -421,7 +419,7 @@ class ConversionData(object):
         name_list.remove(check_name)
     return '*'.join(sorted(name_list))
 
-class ConversionType(object):
+class ConversionType:
 
   def __init__(self, class_name, scale_factor):
     self.class_name = class_name

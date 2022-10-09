@@ -1,5 +1,7 @@
-#!/usr/bin/python2
+#i!/usr/bin/python3
 """Runs IO tests on RPN."""
+
+#pylint: disable=consider-using-with
 
 import inspect
 import logging
@@ -58,7 +60,7 @@ DATA = """
   O y = 5.0 |>
 
   I D 5 2 ** $pi *
-  O y = 78.5398163397 |>
+  O y = 78.53981633974483 |>
 
   I D 1e6 2.5e-4
   O x = 1000000.0 y = 0.00025 |>
@@ -115,31 +117,31 @@ DATA = """
   O y = 128 | 0x80 |hex|mix|>
 
   I normal nomix D 7+i 2+i &
-  E While parsing &: TypeError: can't convert complex to int !!
+  E While parsing &: TypeError: int() argument must be a string, a bytes-like object or a real number, not 'complex' !!
   O |>
 
   I D 7+i 2+i |
-  E While parsing |: TypeError: can't convert complex to int !!
+  E While parsing |: TypeError: int() argument must be a string, a bytes-like object or a real number, not 'complex' !!
   O |>
 
   I D 7+i 2+i ^
-  E While parsing ^: TypeError: can't convert complex to int !!
+  E While parsing ^: TypeError: int() argument must be a string, a bytes-like object or a real number, not 'complex' !!
   O |>
 
   I D 7+i 2 >>
-  E While parsing >>: TypeError: can't convert complex to int !!
+  E While parsing >>: TypeError: int() argument must be a string, a bytes-like object or a real number, not 'complex' !!
   O |>
 
   I D 7 2+i >>
-  E While parsing >>: TypeError: can't convert complex to int !!
+  E While parsing >>: TypeError: int() argument must be a string, a bytes-like object or a real number, not 'complex' !!
   O |>
 
   I D 7+i 2 <<
-  E While parsing <<: TypeError: can't convert complex to int !!
+  E While parsing <<: TypeError: int() argument must be a string, a bytes-like object or a real number, not 'complex' !!
   O |>
 
   I D 7 2+i <<
-  E While parsing <<: TypeError: can't convert complex to int !!
+  E While parsing <<: TypeError: int() argument must be a string, a bytes-like object or a real number, not 'complex' !!
   O |>
 
 # --- Scientific ---
@@ -181,28 +183,19 @@ DATA = """
   O y = 125.0 |>
 
   I D 100+i log10
-  O y = 2.00002171364+0.00434280006289i |>
+  O y = 2.000021713638431+0.004342800062890486i |>
 
   I D 100+i log
-  O y = 4.60522018349+0.00999966668667i |>
+  O y = 4.605220183488258+0.009999666686665238i |>
 
   I D 5+i sq
   O y = 24.0+10.0i |>
 
   I D 25+i sqrt
-  O y = 5.00099950042+0.0999800139868i |>
-
-  I D 10+i 3 %
-  O y = 1.0+1.0i |>
-
-  I D 10 3+i %
-  O y = 1.0-3.0i |>
-
-  I D 10+i 3+i %
-  O y = 1.0-2.0i |>
+  O y = 5.000999500419572+0.09998001398681428i |>
 
   I D 5+i !
-  E While parsing !: TypeError: can't convert complex to int !!
+  E While parsing !: TypeError: int() argument must be a string, a bytes-like object or a real number, not 'complex' !!
   O |>
 
   I D 1+i inv
@@ -212,16 +205,16 @@ DATA = """
   O y = -1234.0-1.0i |>
 
   I D -1234-i abs
-  O y = 1234.00040519 |>
+  O y = 1234.0004051863193 |>
 
   I D 5 3+i **
-  O y = -4.82899624174+124.906688353i |>
+  O y = -4.828996241741916+124.90668835293506i |>
 
   I D 5+i 3 **
   O y = 110.0+74.0i |>
 
   I D 5+i 3+i **
-  O y = -65.8979414546+86.6056303503i |>
+  O y = -65.89794145463469+86.60563035026283i |>
 
   I D 5e6i
   O y = 5000000.0i |>
@@ -440,127 +433,127 @@ DATA = """
   O y = -0.0012-5.1e-06i |>
 
   I D 1 2e2<
-  O y = 108.060461174+168.294196962i | 200.0<1.0 |polar|>
+  O y = 108.06046117362796+168.2941969615793i | 200.0<1.0 |polar|>
 
   I D 1 2e-2<
-  O y = 0.0108060461174+0.0168294196962i | 0.02<1.0 |polar|>
+  O y = 0.010806046117362796+0.01682941969615793i | 0.020000000000000004<1.0 |polar|>
 
   I D 1 -2e2<
-  O y = -108.060461174-168.294196962i | 200.0<-2.14159265359 |polar|>
+  O y = -108.06046117362796-168.2941969615793i | 200.0<-2.141592653589793 |polar|>
 
   I D 1 -2e-2<
-  O y = -0.0108060461174-0.0168294196962i | 0.02<-2.14159265359 |polar|>
+  O y = -0.010806046117362796-0.01682941969615793i | 0.020000000000000004<-2.141592653589793 |polar|>
 
   I D 1 2.3e2<
-  O y = 124.26953035+193.538326506i | 230.0<1.0 |polar|>
+  O y = 124.26953034967215+193.5383265058162i | 230.0<1.0 |polar|>
 
   I D 1 2.3e-2<
-  O y = 0.012426953035+0.0193538326506i | 0.023<1.0 |polar|>
+  O y = 0.012426953034967214+0.019353832650581618i | 0.023<0.9999999999999999 |polar|>
 
   I D 1 -2.3e2<
-  O y = -124.26953035-193.538326506i | 230.0<-2.14159265359 |polar|>
+  O y = -124.26953034967215-193.5383265058162i | 230.0<-2.141592653589793 |polar|>
 
   I D 1 -2.3e-2<
-  O y = -0.012426953035-0.0193538326506i | 0.023<-2.14159265359 |polar|>
+  O y = -0.012426953034967214-0.019353832650581618i | 0.023<-2.141592653589793 |polar|>
 
   I D 2e2<1
-  O y = 108.060461174+168.294196962i | 200.0<1.0 |polar|>
+  O y = 108.06046117362796+168.2941969615793i | 200.0<1.0 |polar|>
 
   I D 2e-2<1
-  O y = 0.0108060461174+0.0168294196962i | 0.02<1.0 |polar|>
+  O y = 0.010806046117362796+0.01682941969615793i | 0.020000000000000004<1.0 |polar|>
 
   I D -2e2<1
-  O y = -108.060461174-168.294196962i | 200.0<-2.14159265359 |polar|>
+  O y = -108.06046117362796-168.2941969615793i | 200.0<-2.141592653589793 |polar|>
 
   I D -2e-2<1
-  O y = -0.0108060461174-0.0168294196962i | 0.02<-2.14159265359 |polar|>
+  O y = -0.010806046117362796-0.01682941969615793i | 0.020000000000000004<-2.141592653589793 |polar|>
 
   I D 2.3e2<1
-  O y = 124.26953035+193.538326506i | 230.0<1.0 |polar|>
+  O y = 124.26953034967215+193.5383265058162i | 230.0<1.0 |polar|>
 
   I D 2.3e-2<1
-  O y = 0.012426953035+0.0193538326506i | 0.023<1.0 |polar|>
+  O y = 0.012426953034967214+0.019353832650581618i | 0.023<0.9999999999999999 |polar|>
 
   I D -2.3e2<1
-  O y = -124.26953035-193.538326506i | 230.0<-2.14159265359 |polar|>
+  O y = -124.26953034967215-193.5383265058162i | 230.0<-2.141592653589793 |polar|>
 
   I D -2.3e-2<1
-  O y = -0.012426953035-0.0193538326506i | 0.023<-2.14159265359 |polar|>
+  O y = -0.012426953034967214-0.019353832650581618i | 0.023<-2.141592653589793 |polar|>
 
   I D 5<2e2
-  O y = 2.43593837504-4.36648648607i | 5.0<-1.06192982975 |polar|>
+  O y = 2.4359383750350294-4.366486486069973i | 5.0<-1.0619298297467672 |polar|>
 
   I D 5<2e-2
-  O y = 4.99900003333+0.0999933334667i | 5.0<0.02 |polar|>
+  O y = 4.999000033332889+0.0999933334666654i | 5.0<0.02 |polar|>
 
   I D 5<-2e2
-  O y = 2.43593837504+4.36648648607i | 5.0<1.06192982975 |polar|>
+  O y = 2.4359383750350294+4.366486486069973i | 5.0<1.0619298297467672 |polar|>
 
   I D 5<-2e-2
-  O y = 4.99900003333-0.0999933334667i | 5.0<-0.02 |polar|>
+  O y = 4.999000033332889-0.0999933334666654i | 5.0<-0.02 |polar|>
 
   I D 5<2.3e2
-  O y = -3.93847970823-3.08032102027i | 5.0<-2.47785636564 |polar|>
+  O y = -3.93847970822529-3.0803210202668225i | 5.0<-2.4778563656446995 |polar|>
 
   I D 5<2.3e-2
-  O y = 4.9986775583+0.114989861102i | 5.0<0.023 |polar|>
+  O y = 4.99867755829918+0.11498986110151091i | 5.0<0.023 |polar|>
 
   I D 5<-2.3e2
-  O y = -3.93847970823+3.08032102027i | 5.0<2.47785636564 |polar|>
+  O y = -3.93847970822529+3.0803210202668225i | 5.0<2.4778563656446995 |polar|>
 
   I D 5<-2.3e-2
-  O y = 4.9986775583-0.114989861102i | 5.0<-0.023 |polar|>
+  O y = 4.99867755829918-0.11498986110151091i | 5.0<-0.023 |polar|>
 
   I D 4.5e6<1.2e3
-  O y = 4482431.20133-397253.729123i | 4500000.0<-0.088393671301 |polar|>
+  O y = 4482431.201334612-397253.7291227677i | 4500000.0<-0.0883936713010171 |polar|>
 
   I D 4.5e6<1.2e-3
-  O y = 4499996.76+5399.998704i | 4500000.0<0.0012 |polar|>
+  O y = 4499996.760000389+5399.998704000092i | 4500000.0<0.0011999999999999997 |polar|>
 
   I D 4.5e6<-1.2e3
-  O y = 4482431.20133+397253.729123i | 4500000.0<0.088393671301 |polar|>
+  O y = 4482431.201334612+397253.7291227677i | 4500000.0<0.0883936713010171 |polar|>
 
   I D 4.5e6<-1.2e-3
-  O y = 4499996.76-5399.998704i | 4500000.0<-0.0012 |polar|>
+  O y = 4499996.760000389-5399.998704000092i | 4500000.0<-0.0011999999999999997 |polar|>
 
   I D 4.5e-6<1.2e3
-  O y = 4.48243120133e-06-3.97253729123e-07i | 4.5e-06<-0.088393671301 |polar|>
+  O y = 4.482431201334612e-06-3.972537291227677e-07i | 4.5e-06<-0.0883936713010171 |polar|>
 
   I D 4.5e-6<1.2e-3
-  O y = 4.49999676e-06+5.399998704e-09i | 4.5e-06<0.0012 |polar|>
+  O y = 4.499996760000389e-06+5.399998704000092e-09i | 4.5e-06<0.0011999999999999997 |polar|>
 
   I D 4.5e-6<-1.2e3
-  O y = 4.48243120133e-06+3.97253729123e-07i | 4.5e-06<0.088393671301 |polar|>
+  O y = 4.482431201334612e-06+3.972537291227677e-07i | 4.5e-06<0.0883936713010171 |polar|>
 
   I D 4.5e-6<-1.2e-3
-  O y = 4.49999676e-06-5.399998704e-09i | 4.5e-06<-0.0012 |polar|>
+  O y = 4.499996760000389e-06-5.399998704000092e-09i | 4.5e-06<-0.0011999999999999997 |polar|>
 
   I D -4.5e6<1.2e3
-  O y = -4482431.20133+397253.729123i | 4500000.0<3.05319898229 |polar|>
+  O y = -4482431.201334612+397253.7291227677i | 4500000.0<3.053198982288776 |polar|>
 
   I D -4.5e6<1.2e-3
-  O y = -4499996.76-5399.998704i | 4500000.0<-3.14039265359 |polar|>
+  O y = -4499996.760000389-5399.998704000092i | 4500000.0<-3.1403926535897932 |polar|>
 
   I D -4.5e6<-1.2e3
-  O y = -4482431.20133-397253.729123i | 4500000.0<-3.05319898229 |polar|>
+  O y = -4482431.201334612-397253.7291227677i | 4500000.0<-3.053198982288776 |polar|>
 
   I D -4.5e6<-1.2e-3
-  O y = -4499996.76+5399.998704i | 4500000.0<3.14039265359 |polar|>
+  O y = -4499996.760000389+5399.998704000092i | 4500000.0<3.1403926535897932 |polar|>
 
   I D -4.5e-6<1.2e3
-  O y = -4.48243120133e-06+3.97253729123e-07i | 4.5e-06<3.05319898229 |polar|>
+  O y = -4.482431201334612e-06+3.972537291227677e-07i | 4.5e-06<3.053198982288776 |polar|>
 
   I D -4.5e-6<1.2e-3
-  O y = -4.49999676e-06-5.399998704e-09i | 4.5e-06<-3.14039265359 |polar|>
+  O y = -4.499996760000389e-06-5.399998704000092e-09i | 4.5e-06<-3.1403926535897932 |polar|>
 
   I D -4.5e-6<-1.2e3
-  O y = -4.48243120133e-06-3.97253729123e-07i | 4.5e-06<-3.05319898229 |polar|>
+  O y = -4.482431201334612e-06-3.972537291227677e-07i | 4.5e-06<-3.053198982288776 |polar|>
 
   I D -4.5e-6<-1.2e-3
-  O y = -4.49999676e-06+5.399998704e-09i | 4.5e-06<3.14039265359 |polar|>
+  O y = -4.499996760000389e-06+5.399998704000092e-09i | 4.5e-06<3.1403926535897932 |polar|>
 
   I normal D 1e
-  E Value Error: invalid literal for float(): 1e !!
+  E Value Error: could not convert string to float: '1e' !!
   O |>
 
   I normal D e1
@@ -568,7 +561,7 @@ DATA = """
   O |>
 
   I 1-2
-  E Value Error: invalid literal for float(): 1-2 !!
+  E Value Error: could not convert string to float: '1-2' !!
   O |>
 
   I 1.2.3
@@ -578,13 +571,13 @@ DATA = """
 # --- Trig functions, in radians ---
 
   I D normal $pi 6 / sin
-  O y = 0.5 |>
+  O y = 0.49999999999999994 |>
 
   I D $pi 3 / cos
-  O y = 0.5 |>
+  O y = 0.5000000000000001 |>
 
   I D $pi 4 / tan
-  O y = 1.0 |>
+  O y = 0.9999999999999999 |>
 
   I D 1 asin $pi 2 / -
   O y = 0.0 |>
@@ -596,22 +589,22 @@ DATA = """
   O y = 0.0 |>
 
   I D 1+i sin
-  O y = 1.29845758142+0.634963914785i |>
+  O y = 1.2984575814159773+0.6349639147847361i |>
 
   I asin
   O y = 1.0+1.0i |>
 
   I D 1+i cos
-  O y = 0.833730025131-0.988897705763i |>
+  O y = 0.8337300251311491-0.9888977057628651i |>
 
   I acos
-  O y = 1.0+1.0i |>
+  O y = 0.9999999999999999+1.0i |>
 
   I D 1+i tan
-  O y = 0.27175258532+1.08392332734i |>
+  O y = 0.2717525853195118+1.0839233273386946i |>
 
   I atan
-  O y = 1.0+1.0i |>
+  O y = 1.0+0.9999999999999999i |>
 
   I D sin
   E While parsing sin: Not Enough Stack Arguments !!
@@ -620,13 +613,13 @@ DATA = """
 # --- Trig functions, in degrees ---
 
   I D deg 30 sin
-  O y = 0.5 |deg|>
+  O y = 0.49999999999999994 |deg|>
 
   I D 60 cos
-  O y = 0.5 |deg|>
+  O y = 0.5000000000000001 |deg|>
 
   I D 45 tan
-  O y = 1.0 |deg|>
+  O y = 0.9999999999999999 |deg|>
 
   I D 1 asin
   O y = 90.0 |deg|>
@@ -685,7 +678,7 @@ DATA = """
   O myvar = 5678.0 x = 0.0 y = 5678.0 |>
 
   I D set
-  O c = 299792458.0 e = 2.71828182846 myvar = 5678.0 pi = 3.14159265359 |>
+  O c = 299792458.0 e = 2.718281828459045 myvar = 5678.0 pi = 3.141592653589793 |>
 
   I D myvar=
   E While parsing myvar=: Not Enough Stack Arguments !!
@@ -706,19 +699,19 @@ DATA = """
   O |>
   
   I set
-  O c = 299792458.0 e = 2.71828182846 pi = 3.14159265359 x = 5.0 |>
+  O c = 299792458.0 e = 2.718281828459045 pi = 3.141592653589793 x = 5.0 |>
 
   I pushv
   O |>
 
   I set
-  O c = 299792458.0 e = 2.71828182846 pi = 3.14159265359 x = 5.0 |>
+  O c = 299792458.0 e = 2.718281828459045 pi = 3.141592653589793 x = 5.0 |>
 
   I 4 a= 6 x=
   O a = 4.0 x = 6.0 |>
 
   I popv set
-  O c = 299792458.0 e = 2.71828182846 pi = 3.14159265359 x = 5.0 |>
+  O c = 299792458.0 e = 2.718281828459045 pi = 3.141592653589793 x = 5.0 |>
 
 # --- Full Stack Clipboard ---
 
@@ -746,7 +739,7 @@ DATA = """
   O y = 3.0 |mix|>
 
   I D 5 2 /
-  O y = 2 |mix|>
+  O y = 2.5 |mix|>
 
   I D mix 1 2.0 nomix
   O x = 1 y = 2.0 |>
@@ -809,28 +802,28 @@ DATA = """
   O y = 9.0 |>
 
   I D 5<3.14
-  O y = -4.99999365864+0.00796326458243i | 5.0<3.14 |polar|>
+  O y = -4.999993658637697+0.00796326458243414i | 4.999999999999999<3.14 |polar|>
 
   I deg
-  O y = -4.99999365864+0.00796326458243i | 5.0<179.908747671 |polar|deg|>
+  O y = -4.999993658637697+0.00796326458243414i | 4.999999999999999<179.9087476710785 |polar|deg|>
 
   I D -6<90
-  O y = -3.67394039744e-16-6.0i | 6.0<-90.0 |polar|deg|>
+  O y = -3.6739403974420594e-16-6.0i | 6.0<-90.00000000000001 |polar|deg|>
 
   I rad
-  O y = -3.67394039744e-16-6.0i | 6.0<-1.57079632679 |polar|>
+  O y = -3.6739403974420594e-16-6.0i | 6.0<-1.5707963267948968 |polar|>
 
   I D $pi 2 / 5<
-  O y = 3.06161699787e-16+5.0i | 5.0<1.57079632679 |polar|>
+  O y = 3.061616997868383e-16+5.0i | 5.0<1.5707963267948966 |polar|>
 
   I deg
-  O y = 3.06161699787e-16+5.0i | 5.0<90.0 |polar|deg|>
+  O y = 3.061616997868383e-16+5.0i | 5.0<90.0 |polar|deg|>
 
   I D 5 45 1< *
-  O y = 3.53553390593+3.53553390593i | 5.0<45.0 |polar|deg|>
+  O y = 3.5355339059327378+3.5355339059327373i | 5.0<45.0 |polar|deg|>
 
   I D rad 6 1 1< *
-  O y = 3.24181383521+5.04882590885i | 6.0<1.0 |polar|>
+  O y = 3.2418138352088386+5.048825908847379i | 6.0<0.9999999999999999 |polar|>
 
   I normal D 3+4i real
   O y = 3.0 |>
@@ -842,10 +835,10 @@ DATA = """
   O y = 5.0 |>
 
   I D 3+4i phase
-  O y = 0.927295218002 |>
+  O y = 0.9272952180016122 |>
 
   I deg D 3+4i phase
-  O y = 53.1301023542 |deg|>
+  O y = 53.13010235415598 |deg|>
 
   I rad D 5 real
   O y = 5.0 |>
@@ -894,7 +887,7 @@ DATA = """
   O y = 1923120.0 | 22d06:12:00 |dur|>
 
   I D 536:45
-  O y = 32205.0 | 08:56:45 |dur|>
+  O y = 32205.0 | 0d08:56:45 |dur|>
 
 # --- Stack Management ---
 
@@ -983,7 +976,7 @@ DATA = """
   O y = 73.67 |>
 
   I V mean
-  O y = 24.5566666667 |>
+  O y = 24.55666666666667 |>
 
   I V median
   O y = 36.0 |>
@@ -992,10 +985,10 @@ DATA = """
   O y = 5.0+2.0i |>
 
   I V mean
-  O y = 1.66666666667+0.666666666667i |>
+  O y = 1.6666666666666667+0.6666666666666666i |>
 
   I V median
-  E While parsing median: TypeError: no ordering relation is defined for complex numbers !!
+  E While parsing median: TypeError: '<' not supported between instances of 'complex' and 'complex' !!
   O |>
 
   I D sum
@@ -1099,7 +1092,7 @@ DATA = """
 # --- Duration Display Mode ---
 
   I D nomix dur 1234 12345678.9 3.14 10.5+4.2i ..
-  O s4 = 1234.0 | 20:34 s3 = 12345678.9 | 142d21:21:18 s2 = 3.14 | 00:03 s1 = 10.5+4.2i | 00:10 |dur|> 
+  O s4 = 1234.0 | 0d00:20:34 s3 = 12345678.9 | 142d21:21:18 s2 = 3.14 | 0d00:00:03 s1 = 10.5+4.2i | 0d00:00:10 |dur|>
 
 # --- Date and Time Display Modes - Due to time zones, just make sure that it doesn't crash ---
 
@@ -1112,7 +1105,7 @@ DATA = """
 # --- Polar Display Mode ---
 
   I D 1+i deg polar
-  O y = 1.0+1.0i | 1.41421356237<45.0 |polar|deg|>
+  O y = 1.0+1.0i | 1.4142135623730951<45.0 |polar|deg|>
 
 # --- Money display Mode ---
 
@@ -1132,7 +1125,7 @@ DATA = """
 # --- Duration Auto Enter ---
 
   I normal D 20:00 5000 meters>miles /
-  O y = 386.24256 | 06:26 |dur|>
+  O y = 386.24256 | 0d00:06:26 |dur|>
 
 # --- Money Auto Enter ---
 
@@ -1180,16 +1173,16 @@ DATA = """
   O y = 10.0 |>
 
   I D 1 mi*mi>acres
-  O y = 640.00000038 |>
+  O y = 640.0000003797903 |>
 
   I D 1 pint>tsp
-  O y = 96.000000073 |>
+  O y = 96.00000007299742 |>
 
   I D 10 n*m>in*lbs
-  O y = 88.5043147656 |>
+  O y = 88.50431476562046 |>
 
   I D 4 ft>yards 25 25 * * yard*yard*yard>gallon
-  O y = 168311.688488 |>
+  O y = 168311.68848798322 |>
 
   I D 10+i in>cm
   O y = 25.4+2.54i |>
@@ -1256,19 +1249,19 @@ DATA = """
   O 1.0 x = 0.0 y = 0.0 |>
 
   I D 1 1+i <
-  E While parsing <: TypeError: no ordering relation is defined for complex numbers !!
+  E While parsing <: TypeError: '<' not supported between instances of 'float' and 'complex' !!
   O |>
 
   I D 1 1+i >
-  E While parsing >: TypeError: no ordering relation is defined for complex numbers !!
+  E While parsing >: TypeError: '>' not supported between instances of 'float' and 'complex' !!
   O |>
 
   I D 1 1+i <=
-  E While parsing <=: TypeError: no ordering relation is defined for complex numbers !!
+  E While parsing <=: TypeError: '<=' not supported between instances of 'float' and 'complex' !!
   O |>
 
   I D 1 1+i >=
-  E While parsing >=: TypeError: no ordering relation is defined for complex numbers !!
+  E While parsing >=: TypeError: '>=' not supported between instances of 'float' and 'complex' !!
   O |>
 
   I D 1 1+i ==
@@ -1364,7 +1357,8 @@ def get_output(fout, max_chars=65536):
   line_data = []
   while max_chars > 0:
     fout.flush()
-    line_data.append(fout.read(1))
+    c = fout.read(1)
+    line_data.append(c)
     max_chars -= 1
     if len(line_data) < 2:
       continue
@@ -1427,6 +1421,7 @@ def parse_line(line_number, line, p):
     check_for_extra_output(p, line_number, line)
     p.stdin.write(' '.join(tokens[1:]))
     p.stdin.write('\n')
+    p.stdin.flush()
     return 0
 
   if cmd == 'O':
@@ -1442,10 +1437,11 @@ def parse_line(line_number, line, p):
 
 def main():
   p = subprocess.Popen(
-      ['python2', '-u', 'rpn'],
+      ['python3', '-u', 'rpn'],
       stdin=subprocess.PIPE,
       stdout=subprocess.PIPE,
-      stderr=subprocess.PIPE)
+      stderr=subprocess.PIPE,
+      encoding='utf8')
 
   tests_passed = 0
   tests_failed = 0
